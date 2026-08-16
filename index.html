@@ -3,129 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Zarządzania Liturgiczną Służbą Ołtarza (LSO)</title>
+    <title>Panel Zarządzania LSO</title>
     <style>
         :root {
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --bg-card: #334155;
+            --bg-body: #0b1120;
+            --bg-card: #151f32;
+            --bg-input: #0f172a;
+            --border-color: #1e293b;
             --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent-blue: #38bdf8;
-            --accent-blue-hover: #0284c7;
-            --accent-green: #22c55e;
-            --accent-green-hover: #16a34a;
-            --accent-red: #ef4444;
-            --accent-purple: #a855f7;
-            --accent-gold: #eab308;
-            --border-color: #475569;
+            --text-sub: #94a3b8;
+            --blue-title: #38bdf8;
+            --blue-btn: #38bdf8;
+            --green-btn: #22c55e;
+            --green-dot: #22c55e;
+            --red-dot: #ef4444;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
-            background-color: var(--bg-primary);
+            background-color: var(--bg-body);
             color: var(--text-main);
+            padding: 30px 20px;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            padding: 40px 20px;
         }
 
         .container {
             width: 100%;
-            max-width: 900px;
+            max-width: 960px;
             display: flex;
             flex-direction: column;
-            gap: 24px;
-        }
-
-        header {
-            text-align: center;
-            background-color: var(--bg-secondary);
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border-color);
-        }
-
-        header h1 {
-            color: var(--accent-blue);
-            font-size: 28px;
-            margin-bottom: 8px;
-        }
-
-        header p {
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-
-        .status-card {
-            background-color: var(--bg-secondary);
-            padding: 16px 20px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border: 1px solid var(--border-color);
-        }
-
-        .status-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 600;
-        }
-
-        .status-indicator {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background-color: var(--accent-red);
-            box-shadow: 0 0 10px var(--accent-red);
-            transition: all 0.3s ease;
-        }
-
-        .status-indicator.online {
-            background-color: var(--accent-green);
-            box-shadow: 0 0 10px var(--accent-green);
-        }
-
-        .grid-layout {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
             gap: 20px;
         }
 
+        /* NAGŁÓWEK */
+        .header-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .header-card h1 {
+            color: var(--blue-title);
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .header-card p {
+            color: var(--text-sub);
+            font-size: 14px;
+        }
+
+        /* STATUS POŁĄCZENIA */
+        .status-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--red-dot);
+            box-shadow: 0 0 8px var(--red-dot);
+        }
+
+        .dot.online {
+            background-color: var(--green-dot);
+            box-shadow: 0 0 8px var(--green-dot);
+        }
+
+        .btn-blue {
+            background-color: var(--blue-btn);
+            color: #0f172a;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-blue:hover {
+            opacity: 0.9;
+        }
+
+        /* SIATKA KAFELKÓW */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .card {
-            background-color: var(--bg-secondary);
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 20px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
 
-        .card-header {
+        .card-title {
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-        }
-
-        .card-header h2 {
-            font-size: 18px;
-            color: var(--text-main);
+            padding-bottom: 12px;
+            margin-bottom: 16px;
         }
 
         .form-group {
@@ -135,29 +156,26 @@
         label {
             display: block;
             font-size: 13px;
-            color: var(--text-muted);
+            color: var(--text-sub);
             margin-bottom: 6px;
-            font-weight: 500;
         }
 
         input[type="text"],
         select,
         textarea {
             width: 100%;
-            padding: 10px 12px;
-            background-color: var(--bg-primary);
+            background-color: var(--bg-input);
             border: 1px solid var(--border-color);
             border-radius: 6px;
-            color: var(--text-main);
+            padding: 10px 12px;
+            color: #ffffff;
             font-size: 14px;
-            transition: border-color 0.2s;
+            outline: none;
         }
 
-        input[type="text"]:focus,
-        select:focus,
-        textarea:focus {
-            outline: none;
-            border-color: var(--accent-blue);
+        input[type="text"]::placeholder,
+        textarea::placeholder {
+            color: #475569;
         }
 
         textarea {
@@ -165,117 +183,88 @@
             min-height: 80px;
         }
 
-        .btn {
+        .btn-green {
             width: 100%;
-            padding: 12px;
+            background-color: var(--green-btn);
+            color: #0f172a;
             border: none;
-            border-radius: 6px;
-            font-weight: 600;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 700;
             font-size: 14px;
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-        }
-
-        .btn:active {
-            transform: scale(0.98);
-        }
-
-        .btn-primary {
-            background-color: var(--accent-blue);
-            color: #000;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--accent-blue-hover);
-            color: #fff;
-        }
-
-        .btn-success {
-            background-color: var(--accent-green);
-            color: #000;
-        }
-
-        .btn-success:hover {
-            background-color: var(--accent-green-hover);
-            color: #fff;
-        }
-
-        .alert-box {
             margin-top: 10px;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 13px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-green:hover {
+            opacity: 0.9;
+        }
+
+        .alert-msg {
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--green-btn);
             display: none;
-            font-weight: 500;
+            text-align: center;
+            font-weight: 600;
         }
 
-        .alert-success {
-            background-color: rgba(34, 197, 94, 0.15);
-            border: 1px solid var(--accent-green);
-            color: var(--accent-green);
-        }
-
-        .console-card {
+        .full-width {
             grid-column: 1 / -1;
         }
 
         pre {
-            background-color: var(--bg-primary);
-            padding: 16px;
-            border-radius: 8px;
+            background-color: var(--bg-input);
             border: 1px solid var(--border-color);
-            color: var(--accent-green);
-            font-family: 'Consolas', 'Courier New', Courier, monospace;
+            border-radius: 8px;
+            padding: 14px;
+            color: var(--green-btn);
             font-size: 13px;
-            max-height: 250px;
+            max-height: 200px;
             overflow-y: auto;
             white-space: pre-wrap;
             word-break: break-all;
-        }
-
-        @media (max-width: 600px) {
-            .grid-layout {
-                grid-template-columns: 1fr;
-            }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <header>
+    <!-- NAGŁÓWEK -->
+    <div class="header-card">
         <h1>Panel Zarządzania LSO</h1>
         <p>System integracji strony internetowej z botem Discord</p>
-    </header>
-
-    <div class="status-card">
-        <div class="status-info">
-            <div id="statusDot" class="status-indicator"></div>
-            <span id="statusText">Inicjalizacja połączenia...</span>
-        </div>
-        <div style="display: flex; gap: 8px;">
-            <button class="btn btn-primary" style="width: auto; padding: 8px 16px;" onclick="weryfikujPolaczenie()">🔄 Sprawdź Połączenie</button>
-            <button class="btn btn-primary" style="width: auto; padding: 8px 16px;" onclick="pobierzBazeDanych()">📥 Pobierz dane JSON</button>
-        </div>
     </div>
 
-    <div class="grid-layout">
-        <!-- FORMULARZ 1: DODAWANIE MINISTRANTA -->
+    <!-- STATUS -->
+    <div class="status-card">
+        <div class="status-left">
+            <div id="statusDot" class="dot"></div>
+            <span id="statusText">Sprawdzanie połączenia...</span>
+        </div>
+        <button class="btn-blue" onclick="pobierzBazeDanych()">📥 Pobierz dane JSON</button>
+    </div>
+
+    <!-- SIATKA DANYCH -->
+    <div class="grid-container">
+
+        <!-- 1. DODAJ MINISTRANTA -->
         <div class="card">
             <div>
-                <div class="card-header">
-                    <h2>👤 Dodaj Ministranta</h2>
+                <div class="card-title">
+                    <span>👤</span> Dodaj Ministranta
                 </div>
                 <div class="form-group">
-                    <label for="minNick">Nick / Imię i Nazwisko</label>
+                    <label>Nick / Imię i Nazwisko</label>
                     <input type="text" id="minNick" placeholder="np. Jan Kowalski">
                 </div>
                 <div class="form-group">
-                    <label for="minRanga">Przydzielona Ranga</label>
+                    <label>Przydzielona Ranga</label>
                     <select id="minRanga">
                         <option value="Kandydat">Kandydat</option>
                         <option value="Ministrant">Ministrant</option>
@@ -288,289 +277,241 @@
                 </div>
             </div>
             <div>
-                <button class="btn btn-success" onclick="obsluzDodawanieMinistranta()">➕ Zapisz i Wyślij</button>
-                <div id="msgAddMin" class="alert-box alert-success">✅ Pomyślnie dodano ministranta!</div>
+                <button class="btn-green" onclick="dodajMinistranta()">➕ Zapisz i Wyślij</button>
+                <div id="msgAddMin" class="alert-msg">✅ Pomyślnie wysłano!</div>
             </div>
         </div>
 
-        <!-- FORMULARZ 2: PUBLIKACJA GRAFIKU -->
+        <!-- 2. OPUBLIKUJ GRAFIK -->
         <div class="card">
             <div>
-                <div class="card-header">
-                    <h2>📅 Opublikuj Grafik</h2>
+                <div class="card-title">
+                    <span>📅</span> Opublikuj Grafik
                 </div>
                 <div class="form-group">
-                    <label for="grafikTytul">Tytuł Grafiku</label>
+                    <label>Tytuł Grafiku</label>
                     <input type="text" id="grafikTytul" placeholder="np. Grafik na Tydzień 17.08 - 23.08">
                 </div>
                 <div class="form-group">
-                    <label for="grafikTresc">Szczegóły / Rozpiska Dyżurów</label>
+                    <label>Szczegóły / Rozpiska Dyżurów</label>
                     <textarea id="grafikTresc" placeholder="Niedziela 8:00 - Jan, Piotr&#10;Niedziela 10:00 - Adam, Michał"></textarea>
                 </div>
             </div>
             <div>
-                <button class="btn btn-success" onclick="obsluzOpublikowanieGrafiku()">📤 Opublikuj Grafik</button>
-                <div id="msgGrafik" class="alert-box alert-success">✅ Grafik został pomyślnie wysłany!</div>
+                <button class="btn-green" onclick="wyslijGrafik()">📥 Opublikuj Grafik</button>
+                <div id="msgGrafik" class="alert-msg">✅ Pomyślnie wysłano!</div>
             </div>
         </div>
 
-        <!-- FORMULARZ 3: OGŁOSZENIE MSZA -->
+        <!-- 3. OGŁOSZENIE / SŁUŻBA -->
         <div class="card">
             <div>
-                <div class="card-header">
-                    <h2>📢 Ogłoszenie / Służba</h2>
+                <div class="card-title">
+                    <span>📢</span> Ogłoszenie / Służba
                 </div>
                 <div class="form-group">
-                    <label for="mszaTresc">Treść Komunikatu (@everyone)</label>
+                    <label>Treść Komunikatu (@everyone)</label>
                     <textarea id="mszaTresc" placeholder="Wpisz treść ogłoszenia parafialnego lub informacji dla LSO..."></textarea>
                 </div>
             </div>
             <div>
-                <button class="btn btn-success" onclick="obsluzWysylanieMszy()">📢 Wyślij Ogłoszenie</button>
-                <div id="msgMsza" class="alert-box alert-success">✅ Ogłoszenie wysłane na kanał Discord!</div>
+                <button class="btn-green" onclick="wyslijMsza()">📢 Wyślij Ogłoszenie</button>
+                <div id="msgMsza" class="alert-msg">✅ Pomyślnie wysłano!</div>
             </div>
         </div>
 
-        <!-- FORMULARZ 4: OGŁOSZENIE ZBIÓRKI -->
+        <!-- 4. ZAPLANUJ ZBIÓRKĘ -->
         <div class="card">
             <div>
-                <div class="card-header">
-                    <h2>📌 Zaplanuj Zbiórkę</h2>
+                <div class="card-title">
+                    <span>📌</span> Zaplanuj Zbiórkę
                 </div>
                 <div class="form-group">
-                    <label for="zbiorkaData">Termin Zbiórki</label>
+                    <label>Termin Zbiórki</label>
                     <input type="text" id="zbiorkaData" placeholder="np. Sobota, godz. 10:00 w salce">
                 </div>
             </div>
             <div>
-                <button class="btn btn-success" onclick="obsluzZbiorke()">📌 Wyślij Zbiórkę z Przyciskami</button>
-                <div id="msgZbiorka" class="alert-box alert-success">✅ Powiadomienie o zbiórce wysłane!</div>
+                <button class="btn-green" onclick="wyslijZbiorka()">📌 Wyślij Zbiórkę z Przyciskami</button>
+                <div id="msgZbiorka" class="alert-msg">✅ Pomyślnie wysłano!</div>
             </div>
         </div>
 
-        <!-- FORMULARZ 5: ANKIETA -->
+        <!-- 5. STWÓRZ ANKIETĘ -->
         <div class="card">
             <div>
-                <div class="card-header">
-                    <h2>📊 Stwórz Ankietę</h2>
+                <div class="card-title">
+                    <span>📊</span> Stwórz Ankietę
                 </div>
                 <div class="form-group">
-                    <label for="ankietaPytanie">Pytanie Ankiety</label>
-                    <input type="text" id="ankietaPytanie" placeholder="np. Czy pasuje Wam wyjazd w sobotę?">
+                    <label>Pytanie Ankiety</label>
+                    <input type="text" id="ankietaPytanie" placeholder="np. Czy pasuje wam wyjazd w sobotę?">
                 </div>
                 <div class="form-group">
-                    <label for="ankietaOpcje">Opcje odpowiedzi (rozdzielone przecinkami)</label>
-                    <input type="text" id="ankietaOpcje" placeholder="Tak, Nie, Nie mam zdania">
+                    <label>Opcje (oddzielone przecinkami)</label>
+                    <input type="text" id="ankietaOpcje" placeholder="Tak, Nie, Może">
                 </div>
             </div>
             <div>
-                <button class="btn btn-success" onclick="obsluzAnkiete()">📊 Opublikuj Ankietę</button>
-                <div id="msgAnkieta" class="alert-box alert-success">✅ Ankieta z reakcjami utworzona!</div>
+                <button class="btn-green" onclick="wyslijAnkieta()">📊 Opublikuj Ankietę</button>
+                <div id="msgAnkieta" class="alert-msg">✅ Pomyślnie wysłano!</div>
             </div>
         </div>
 
-        <!-- FORMULARZ 6: TICKET / ZGŁOSZENIE -->
+        <!-- 6. ZGŁOSZENIE / SPRAWA -->
         <div class="card">
             <div>
-                <div class="card-header">
-                    <h2>📩 Zgłoszenie / Sprawa</h2>
+                <div class="card-title">
+                    <span>📩</span> Zgłoszenie / Sprawa
                 </div>
                 <div class="form-group">
-                    <label for="ticketTytul">Tytuł Zgłoszenia</label>
-                    <input type="text" id="ticketTytul" placeholder="np. Uszkodzony albat">
+                    <label>Tytuł Zgłoszenia</label>
+                    <input type="text" id="ticketTytul" placeholder="np. Uszkodzony alba">
                 </div>
                 <div class="form-group">
-                    <label for="ticketOpis">Opis Sprawy</label>
-                    <textarea id="ticketOpis" placeholder="Opisz dokładnie problem lub sprawę do załatwienia..."></textarea>
+                    <label>Opis Sprawy</label>
+                    <textarea id="ticketOpis" placeholder="Opisz dokładnie problem..."></textarea>
                 </div>
             </div>
             <div>
-                <button class="btn btn-success" onclick="obsluzTicket()">📩 Wyślij Zgłoszenie</button>
-                <div id="msgTicket" class="alert-box alert-success">✅ Zgłoszenie trafiło na Discorda!</div>
+                <button class="btn-green" onclick="wyslijTicket()">📩 Wyślij Zgłoszenie</button>
+                <div id="msgTicket" class="alert-msg">✅ Pomyślnie wysłano!</div>
             </div>
         </div>
 
-        <!-- PODGLĄD KONSOLI API -->
-        <div class="card console-card">
-            <div class="card-header">
-                <h2>🖥️ Podgląd Konsoli i Odpowiedzi API</h2>
+        <!-- KONSOLA API -->
+        <div class="card full-width">
+            <div class="card-title">
+                <span>🖥️</span> Podgląd Konsoli API
             </div>
-            <pre id="outputConsole">Brak wykonanych operacji. Wybierz dowolną akcję powyżej...</pre>
+            <pre id="outputConsole">Oczekiwanie na akcję...</pre>
         </div>
+
     </div>
 </div>
 
 <script>
     const API_BASE_URL = "https://bot-lso.onrender.com";
 
-    function wyswietlAlert(elementId) {
+    function pokazAlert(elementId) {
         const el = document.getElementById(elementId);
         if (el) {
             el.style.display = "block";
-            setTimeout(() => {
-                el.style.display = "none";
-            }, 4000);
+            setTimeout(() => { el.style.display = "none"; }, 3500);
         }
     }
 
-    function wpiszDoKonsoli(tresc) {
+    function wpiszKonsola(data) {
         const consoleEl = document.getElementById('outputConsole');
-        if (typeof tresc === 'object') {
-            consoleEl.innerText = JSON.stringify(tresc, null, 2);
+        if (typeof data === 'object') {
+            consoleEl.innerText = JSON.stringify(data, null, 2);
         } else {
-            consoleEl.innerText = tresc;
+            consoleEl.innerText = data;
         }
     }
 
-    async function weryfikujPolaczenie() {
+    async function sprawdzPolaczenie() {
         const dot = document.getElementById('statusDot');
         const text = document.getElementById('statusText');
-        text.innerText = "Sprawdzanie połączenia...";
         
         try {
-            const res = await fetch(`${API_BASE_URL}/api/data`, {
-                method: 'GET',
-                mode: 'cors'
-            });
+            const res = await fetch(`${API_BASE_URL}/api/data`);
             if (res.ok) {
                 dot.classList.add('online');
                 text.innerText = "Połączono z botem (API Aktywne)";
-                const data = await res.json();
-                wpiszDoKonsoli(data);
             } else {
                 dot.classList.remove('online');
-                text.innerText = "Błąd odpowiedzi serwera (" + res.status + ")";
+                text.innerText = "Błąd odpowiedzi z serwera";
             }
         } catch (err) {
             dot.classList.remove('online');
-            text.innerText = "Brak połączenia z botem (Serwer wyłączony lub wybudza się na Render)";
-            wpiszDoKonsoli("❌ Błąd połączenia:\n" + err + "\n\nJeśli używasz darmowego hostingu Render, wybudzenie serwera z uśpienia może zająć do 50 sekund.");
+            text.innerText = "Brak połączenia z botem (Offline)";
         }
     }
 
     async function pobierzBazeDanych() {
-        wpiszDoKonsoli("Pobieranie pełnej bazy danych...");
+        wpiszKonsola("Pobieranie bazy danych z bota...");
         try {
-            const res = await fetch(`${API_BASE_URL}/api/data`, { mode: 'cors' });
+            const res = await fetch(`${API_BASE_URL}/api/data`);
             const data = await res.json();
-            wpiszDoKonsoli(data);
+            wpiszKonsola(data);
+            sprawdzPolaczenie();
         } catch (err) {
-            wpiszDoKonsoli("❌ Błąd podczas pobierania danych:\n" + err);
+            wpiszKonsola("❌ Błąd pobierania danych:\n" + err);
         }
     }
 
-    async function wyślijZapytaniePOST(endpoint, dane, idAlertu) {
-        wpiszDoKonsoli("Wysyłanie danych do serwera...");
+    async function wyslijPOST(endpoint, payload, alertId) {
+        wpiszKonsola("Wysyłanie danych do bota...");
         try {
             const res = await fetch(`${API_BASE_URL}${endpoint}`, {
                 method: 'POST',
-                mode: 'cors',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(dane)
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
             });
-            const wynik = await res.json();
-            wpiszDoKonsoli(wynik);
-            if (res.ok && wynik.status === "ok") {
-                wyswietlAlert(idAlertu);
-                weryfikujPolaczenie();
+            const data = await res.json();
+            wpiszKonsola(data);
+            if (res.ok || data.status === "ok") {
+                pokazAlert(alertId);
+                sprawdzPolaczenie();
             }
         } catch (err) {
-            wpiszDoKonsoli("❌ Błąd podczas wysyłania zapytania:\n" + err);
+            wpiszKonsola("❌ Błąd połączenia:\n" + err);
         }
     }
 
-    function obsluzDodawanieMinistranta() {
+    function dodajMinistranta() {
         const nick = document.getElementById('minNick').value.trim();
         const ranga = document.getElementById('minRanga').value;
-
-        if (!nick) {
-            alert("Proszę podać nick lub imię i nazwisko!");
-            return;
-        }
-
-        wyślijZapytaniePOST('/api/add_ministrant', { nick: nick, ranga: ranga }, 'msgAddMin');
+        if (!nick) return alert("Podaj nick!");
+        wyslijPOST('/api/add_ministrant', { nick, ranga }, 'msgAddMin');
         document.getElementById('minNick').value = "";
     }
 
-    function obsluzOpublikowanieGrafiku() {
+    function wyslijGrafik() {
         const tytul = document.getElementById('grafikTytul').value.trim();
         const tresc = document.getElementById('grafikTresc').value.trim();
-
-        if (!tytul || !tresc) {
-            alert("Uzupełnij tytuł i treść grafiku!");
-            return;
-        }
-
-        wyślijZapytaniePOST('/api/post_grafik', { tytul: tytul, tresc: tresc }, 'msgGrafik');
+        if (!tytul || !tresc) return alert("Uzupełnij pola grafiku!");
+        wyslijPOST('/api/post_grafik', { tytul, tresc }, 'msgGrafik');
         document.getElementById('grafikTytul').value = "";
         document.getElementById('grafikTresc').value = "";
     }
 
-    function obsluzWysylanieMszy() {
+    function wyslijMsza() {
         const tresc = document.getElementById('mszaTresc').value.trim();
-
-        if (!tresc) {
-            alert("Wpisz treść ogłoszenia!");
-            return;
-        }
-
-        wyślijZapytaniePOST('/api/post_msza', { tresc: tresc }, 'msgMsza');
+        if (!tresc) return alert("Uzupełnij treść ogłoszenia!");
+        wyslijPOST('/api/post_msza', { tresc }, 'msgMsza');
         document.getElementById('mszaTresc').value = "";
     }
 
-    function obsluzZbiorke() {
+    function wyslijZbiorka() {
         const data = document.getElementById('zbiorkaData').value.trim();
-
-        if (!data) {
-            alert("Podaj termin zbiórki!");
-            return;
-        }
-
-        wyślijZapytaniePOST('/api/post_zbiorka', { data: data }, 'msgZbiorka');
+        if (!data) return alert("Podaj termin zbiórki!");
+        wyslijPOST('/api/post_zbiorka', { data }, 'msgZbiorka');
         document.getElementById('zbiorkaData').value = "";
     }
 
-    function obsluzAnkiete() {
+    function wyslijAnkieta() {
         const pytanie = document.getElementById('ankietaPytanie').value.trim();
-        const opcjeSurowe = document.getElementById('ankietaOpcje').value.trim();
-
-        if (!pytanie || !opcjeSurowe) {
-            alert("Podaj pytanie oraz opcje odpowiedzi!");
-            return;
-        }
-
-        const opcjeArray = opcjeSurowe.split(',').map(opc => opc.trim()).filter(opc => opc.length > 0);
-
-        if (opcjeArray.length === 0) {
-            alert("Wprowadź przynajmniej jedną poprawną opcję!");
-            return;
-        }
-
-        wyślijZapytaniePOST('/api/post_ankieta', { pytanie: pytanie, opcje: opcjeArray }, 'msgAnkieta');
+        const opcjeRaw = document.getElementById('ankietaOpcje').value.trim();
+        if (!pytanie || !opcjeRaw) return alert("Uzupełnij pole pytania i opcji!");
+        const opcje = opcjeRaw.split(',').map(s => s.trim()).filter(s => s.length > 0);
+        wyslijPOST('/api/post_ankieta', { pytanie, opcje }, 'msgAnkieta');
         document.getElementById('ankietaPytanie').value = "";
         document.getElementById('ankietaOpcje').value = "";
     }
 
-    function obsluzTicket() {
+    function wyslijTicket() {
         const tytul = document.getElementById('ticketTytul').value.trim();
         const opis = document.getElementById('ticketOpis').value.trim();
-
-        if (!tytul || !opis) {
-            alert("Uzupełnij tytuł oraz opis zgłoszenia!");
-            return;
-        }
-
-        wyślijZapytaniePOST('/api/post_ticket', { tytul: tytul, opis: opis }, 'msgTicket');
+        if (!tytul || !opis) return alert("Uzupełnij tytuł i opis!");
+        wyslijPOST('/api/post_ticket', { tytul, opis }, 'msgTicket');
         document.getElementById('ticketTytul').value = "";
         document.getElementById('ticketOpis').value = "";
     }
 
-    // Wywołanie sprawdzania stanu po załadowaniu drzewa DOM
-    document.addEventListener("DOMContentLoaded", () => {
-        weryfikujPolaczenie();
-    });
+    // Wywołanie sprawdzania stanu po załadowaniu strony
+    window.onload = sprawdzPolaczenie;
 </script>
 
 </body>
