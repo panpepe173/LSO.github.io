@@ -12,7 +12,6 @@
             --bg-navbar: #121318;
             --bg-card: #181a21;
             --bg-input: #20232d;
-            --bg-input-hover: #262935;
             --accent-blue: #5865f2;
             --accent-blue-hover: #4752c4;
             --accent-red: #ed4245;
@@ -21,6 +20,7 @@
             --text-main: #ffffff;
             --text-muted: #8e9297;
             --border-color: #23272d;
+            --status-offline: #747f8d;
         }
 
         [data-theme="light"] {
@@ -28,7 +28,6 @@
             --bg-navbar: #ffffff;
             --bg-card: #ffffff;
             --bg-input: #e3e5e8;
-            --bg-input-hover: #d1d5db;
             --accent-blue: #5865f2;
             --accent-blue-hover: #4752c4;
             --accent-red: #ed4245;
@@ -37,6 +36,7 @@
             --text-main: #2e3338;
             --text-muted: #5c6470;
             --border-color: #e3e5e8;
+            --status-offline: #95a5a6;
         }
 
         * {
@@ -108,7 +108,6 @@
             font-size: 0.9rem;
             outline: none;
             margin-bottom: 16px;
-            transition: border-color 0.2s;
         }
 
         .login-input:focus {
@@ -207,9 +206,10 @@
         .nav-right {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
+        /* PRZYCISK LAMPKI / MOTYWU */
         .btn-theme {
             background-color: var(--bg-card);
             color: var(--accent-gold);
@@ -226,6 +226,21 @@
 
         .btn-theme:hover {
             background-color: var(--bg-input);
+        }
+
+        /* WSKAŹNIK STATUSU BOTА (KÓŁKO) */
+        .bot-status-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background-color: var(--status-offline);
+            display: inline-block;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        .bot-status-dot.online {
+            background-color: var(--accent-green);
+            box-shadow: 0 0 8px var(--accent-green);
         }
 
         .btn-logout {
@@ -260,7 +275,6 @@
             gap: 20px;
         }
 
-        /* --- FORMULARZE I KARTY --- */
         .card {
             background-color: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -294,7 +308,6 @@
         .form-group label {
             font-size: 0.85rem;
             font-weight: 600;
-            color: var(--text-main);
         }
 
         .form-control, .form-select {
@@ -306,7 +319,6 @@
             font-size: 0.9rem;
             outline: none;
             width: 100%;
-            transition: border-color 0.2s;
         }
 
         .form-control:focus, .form-select:focus {
@@ -340,7 +352,6 @@
             background-color: var(--accent-blue-hover);
         }
 
-        /* --- STYL DLA GŁÓWNA --- */
         .banner-card {
             text-align: center;
             align-items: center;
@@ -394,7 +405,6 @@
         .value-red { color: var(--accent-red); }
         .value-green { color: var(--accent-green); }
 
-        /* --- STYL DLA GRAFIKU --- */
         .btn-print {
             background-color: var(--bg-input);
             color: var(--text-main);
@@ -472,7 +482,7 @@
 </head>
 <body>
 
-    <!-- 1. EKRAN LOGOWANIA -->
+    <!-- EKRAN LOGOWANIA -->
     <div id="login-screen">
         <div class="login-card">
             <img src="LSO.jpg" alt="Logo LSO" class="login-logo" onerror="this.src='https://via.placeholder.com/70?text=LSO'">
@@ -487,10 +497,10 @@
         </div>
     </div>
 
-    <!-- 2. GŁÓWNY PANEL -->
+    <!-- MAIN PANEL -->
     <div id="main-panel">
 
-        <!-- PASEK NAWIGACYJNY -->
+        <!-- NAVBAR -->
         <nav class="navbar">
             <div class="navbar-brand">
                 <img src="LSO.jpg" alt="Logo" onerror="this.src='https://via.placeholder.com/32?text=LSO'">
@@ -509,9 +519,15 @@
             </ul>
 
             <div class="nav-right">
+                <!-- PRZYCISK LAMPKI -->
                 <button class="btn-theme" onclick="toggleTheme()" title="Zmień Motyw">
                     <i class="fa-solid fa-lightbulb"></i>
                 </button>
+                
+                <!-- KÓŁKO STATUSU POŁĄCZENIA Z BOTEM -->
+                <span id="bot-status" class="bot-status-dot" title="Brak połączenia z botem"></span>
+
+                <!-- PRZYCISK WYLOGUJ -->
                 <button class="btn-logout" onclick="logout()" title="Wyloguj"><i class="fa-solid fa-right-from-bracket"></i></button>
             </div>
         </nav>
@@ -559,7 +575,6 @@
                         <input type="text" id="grafikTytul" class="form-control" placeholder="np. Grafik na Tydzień 17.08 - 23.08">
                     </div>
 
-                    <!-- Poniedziałek -->
                     <div class="day-card">
                         <div class="day-title"><i class="fa-regular fa-calendar"></i> Poniedziałek</div>
                         <div class="hours-grid">
@@ -574,7 +589,6 @@
                         </div>
                     </div>
 
-                    <!-- Wtorek -->
                     <div class="day-card">
                         <div class="day-title"><i class="fa-regular fa-calendar"></i> Wtorek</div>
                         <div class="hours-grid">
@@ -589,7 +603,6 @@
                         </div>
                     </div>
 
-                    <!-- Środa -->
                     <div class="day-card">
                         <div class="day-title"><i class="fa-regular fa-calendar"></i> Środa</div>
                         <div class="hours-grid">
@@ -604,7 +617,6 @@
                         </div>
                     </div>
 
-                    <!-- Czwartek -->
                     <div class="day-card">
                         <div class="day-title"><i class="fa-regular fa-calendar"></i> Czwartek</div>
                         <div class="hours-grid">
@@ -619,7 +631,6 @@
                         </div>
                     </div>
 
-                    <!-- Piątek -->
                     <div class="day-card">
                         <div class="day-title"><i class="fa-regular fa-calendar"></i> Piątek</div>
                         <div class="hours-grid">
@@ -634,7 +645,6 @@
                         </div>
                     </div>
 
-                    <!-- Sobota -->
                     <div class="day-card">
                         <div class="day-title"><i class="fa-regular fa-calendar"></i> Sobota</div>
                         <div class="hours-grid">
@@ -649,7 +659,6 @@
                         </div>
                     </div>
 
-                    <!-- Niedziela -->
                     <div class="day-card">
                         <div class="day-title sunday"><i class="fa-solid fa-sun"></i> Niedziela</div>
                         <div class="hours-grid three-cols">
@@ -823,7 +832,6 @@
         </div>
     </div>
 
-    <!-- SKRYPTY LOGIKI I POŁĄCZENIA API -->
     <script>
         const ADMIN_PASSWORD = "admin";
         const API_BASE_URL = "https://bot-lso.onrender.com";
@@ -837,6 +845,8 @@
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('main-panel').style.display = 'block';
                 pobierzDaneBota();
+                // Sprawdzaj stan połączenia co 15 sekund
+                setInterval(pobierzDaneBota, 15000);
             } else {
                 errorMsg.style.display = 'block';
             }
@@ -867,17 +877,33 @@
             html.setAttribute('data-theme', newTheme);
         }
 
+        // Funkcja aktualizująca stan zielonej/szarej kropki
+        function setBotStatus(isOnline) {
+            const statusDot = document.getElementById('bot-status');
+            if (isOnline) {
+                statusDot.classList.add('online');
+                statusDot.title = "Bot jest połączony";
+            } else {
+                statusDot.classList.remove('online');
+                statusDot.title = "Brak połączenia z botem";
+            }
+        }
+
         async function pobierzDaneBota() {
             try {
                 const res = await fetch(`${API_BASE_URL}/api/data`);
                 if (res.ok) {
+                    setBotStatus(true); // Połączenie udane -> Zielone kółko
                     const data = await res.json();
                     if (data.ministranci) document.getElementById('stat-czlonkowie').innerText = data.ministranci.length;
                     if (data.ankieta) document.getElementById('stat-ankiety').innerText = 1;
                     if (data.tickets) document.getElementById('stat-zgłoszenia').innerText = data.tickets.length;
                     if (data.zbiorka) document.getElementById('stat-zbiorka').innerText = data.zbiorka.bede ? data.zbiorka.bede.length : 0;
+                } else {
+                    setBotStatus(false); // Błąd serwera -> Szare kółko
                 }
             } catch (err) {
+                setBotStatus(false); // Brak sieci/offline -> Szare kółko
                 console.error("Błąd połączenia z API:", err);
             }
         }
@@ -889,10 +915,16 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                const data = await res.json();
-                alert("✅ Zgłoszenie wysłane pomyślnie!");
-                pobierzDaneBota();
+                if (res.ok) {
+                    setBotStatus(true);
+                    alert("✅ Zgłoszenie wysłane pomyślnie!");
+                    pobierzDaneBota();
+                } else {
+                    setBotStatus(false);
+                    alert("❌ Błąd serwera bota.");
+                }
             } catch (err) {
+                setBotStatus(false);
                 alert("❌ Wystąpił błąd podczas połączenia z API bota.");
             }
         }
