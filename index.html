@@ -23,6 +23,22 @@
             --border-color: #23272d;
         }
 
+        [data-theme="light"] {
+            --bg-primary: #f4f5f7;
+            --bg-navbar: #ffffff;
+            --bg-card: #ffffff;
+            --bg-input: #e3e5e8;
+            --bg-input-hover: #d1d5db;
+            --accent-blue: #5865f2;
+            --accent-blue-hover: #4752c4;
+            --accent-red: #ed4245;
+            --accent-gold: #d97706;
+            --accent-green: #10b981;
+            --text-main: #2e3338;
+            --text-muted: #5c6470;
+            --border-color: #e3e5e8;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -34,6 +50,7 @@
             background-color: var(--bg-primary);
             color: var(--text-main);
             min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         /* --- EKRAN LOGOWANIA --- */
@@ -122,7 +139,7 @@
             display: none;
         }
 
-        /* --- PANEL GŁÓWNY (Ukryty domyślnie) --- */
+        /* --- PANEL GŁÓWNY --- */
         #main-panel {
             display: none;
         }
@@ -193,21 +210,29 @@
             gap: 10px;
         }
 
-        .theme-select {
+        .btn-theme {
             background-color: var(--bg-card);
-            color: var(--text-main);
+            color: var(--accent-gold);
             border: 1px solid var(--border-color);
-            padding: 6px 12px;
+            padding: 8px 12px;
             border-radius: 6px;
-            font-size: 0.85rem;
-            outline: none;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-theme:hover {
+            background-color: var(--bg-input);
         }
 
         .btn-logout {
             background-color: rgba(237, 66, 69, 0.1);
             color: var(--accent-red);
             border: 1px solid rgba(237, 66, 69, 0.3);
-            padding: 6px 10px;
+            padding: 8px 12px;
             border-radius: 6px;
             cursor: pointer;
             transition: 0.2s;
@@ -423,21 +448,6 @@
             margin-bottom: 4px;
         }
 
-        /* Console Box */
-        pre#outputConsole {
-            background-color: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 14px;
-            color: var(--accent-green);
-            font-size: 13px;
-            max-height: 200px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            word-break: break-all;
-        }
-
-        /* Responsive */
         @media (max-width: 768px) {
             .stats-grid, .hours-grid, .hours-grid.three-cols {
                 grid-template-columns: 1fr;
@@ -453,9 +463,8 @@
             }
         }
 
-        /* Style do druku */
         @media print {
-            .navbar, .btn-print, .btn-submit, #outputConsole { display: none; }
+            .navbar, .btn-print, .btn-submit { display: none; }
             body { background: white; color: black; }
             .card, .day-card { border: 1px solid #ccc; background: white; color: black; }
         }
@@ -478,7 +487,7 @@
         </div>
     </div>
 
-    <!-- 2. GŁÓWNY PANEL (AKTYWOWANY PO ZALOGOWANIU) -->
+    <!-- 2. GŁÓWNY PANEL -->
     <div id="main-panel">
 
         <!-- PASEK NAWIGACYJNY -->
@@ -500,9 +509,9 @@
             </ul>
 
             <div class="nav-right">
-                <select class="theme-select">
-                    <option>🌙 Ciemny</option>
-                </select>
+                <button class="btn-theme" onclick="toggleTheme()" title="Zmień Motyw">
+                    <i class="fa-solid fa-lightbulb"></i>
+                </button>
                 <button class="btn-logout" onclick="logout()" title="Wyloguj"><i class="fa-solid fa-right-from-bracket"></i></button>
             </div>
         </nav>
@@ -534,13 +543,6 @@
                         <div class="stat-header"><i class="fa-solid fa-check"></i> Zbiórka: Będą</div>
                         <div class="stat-value value-green" id="stat-zbiorka">0</div>
                     </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title"><i class="fa-solid fa-terminal"></i> Konsola Serwera API</div>
-                    </div>
-                    <pre id="outputConsole">Gotowy do pracy.</pre>
                 </div>
             </div>
 
@@ -821,7 +823,7 @@
         </div>
     </div>
 
-    <!-- SKRYPTY LOGIKI I POLĄCZENIA API -->
+    <!-- SKRYPTY LOGIKI I POŁĄCZENIA API -->
     <script>
         const ADMIN_PASSWORD = "admin";
         const API_BASE_URL = "https://bot-lso.onrender.com";
@@ -858,34 +860,29 @@
             element.classList.add('active');
         }
 
-        function logConsole(data) {
-            const consoleEl = document.getElementById('outputConsole');
-            if (typeof data === 'object') {
-                consoleEl.innerText = JSON.stringify(data, null, 2);
-            } else {
-                consoleEl.innerText = data;
-            }
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
         }
 
         async function pobierzDaneBota() {
-            logConsole("Łączenie z serwerem API...");
             try {
                 const res = await fetch(`${API_BASE_URL}/api/data`);
                 if (res.ok) {
                     const data = await res.json();
-                    logConsole(data);
                     if (data.ministranci) document.getElementById('stat-czlonkowie').innerText = data.ministranci.length;
                     if (data.ankieta) document.getElementById('stat-ankiety').innerText = 1;
                     if (data.tickets) document.getElementById('stat-zgłoszenia').innerText = data.tickets.length;
                     if (data.zbiorka) document.getElementById('stat-zbiorka').innerText = data.zbiorka.bede ? data.zbiorka.bede.length : 0;
                 }
             } catch (err) {
-                logConsole("⚠️ Błąd połączenia z API (bot offline lub uruchamia się na Render).");
+                console.error("Błąd połączenia z API:", err);
             }
         }
 
         async function wyslijPOST(endpoint, payload) {
-            logConsole("Wysyłanie danych do bota...");
             try {
                 const res = await fetch(`${API_BASE_URL}${endpoint}`, {
                     method: 'POST',
@@ -893,11 +890,9 @@
                     body: JSON.stringify(payload)
                 });
                 const data = await res.json();
-                logConsole(data);
                 alert("✅ Zgłoszenie wysłane pomyślnie!");
                 pobierzDaneBota();
             } catch (err) {
-                logConsole("❌ Błąd wysyłania: " + err);
                 alert("❌ Wystąpił błąd podczas połączenia z API bota.");
             }
         }
