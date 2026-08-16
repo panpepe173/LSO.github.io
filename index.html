@@ -84,17 +84,17 @@
         }
 
         .status-indicator {
-            width: 12px;
-            height: 12px;
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
             background-color: var(--accent-red);
-            box-shadow: 0 0 8px var(--accent-red);
+            box-shadow: 0 0 10px var(--accent-red);
             transition: all 0.3s ease;
         }
 
         .status-indicator.online {
             background-color: var(--accent-green);
-            box-shadow: 0 0 8px var(--accent-green);
+            box-shadow: 0 0 10px var(--accent-green);
         }
 
         .grid-layout {
@@ -219,12 +219,6 @@
             color: var(--accent-green);
         }
 
-        .alert-error {
-            background-color: rgba(239, 68, 68, 0.15);
-            border: 1px solid var(--accent-red);
-            color: var(--accent-red);
-        }
-
         .console-card {
             grid-column: 1 / -1;
         }
@@ -241,10 +235,6 @@
             overflow-y: auto;
             white-space: pre-wrap;
             word-break: break-all;
-        }
-
-        .full-width {
-            grid-column: 1 / -1;
         }
 
         @media (max-width: 600px) {
@@ -265,9 +255,12 @@
     <div class="status-card">
         <div class="status-info">
             <div id="statusDot" class="status-indicator"></div>
-            <span id="statusText">Sprawdzanie połączenia z serwerem API...</span>
+            <span id="statusText">Inicjalizacja połączenia...</span>
         </div>
-        <button class="btn btn-primary" style="width: auto; padding: 8px 16px;" onclick="pobierzBazeDanych()">📥 Pobierz dane JSON</button>
+        <div style="display: flex; gap: 8px;">
+            <button class="btn btn-primary" style="width: auto; padding: 8px 16px;" onclick="weryfikujPolaczenie()">🔄 Sprawdź Połączenie</button>
+            <button class="btn btn-primary" style="width: auto; padding: 8px 16px;" onclick="pobierzBazeDanych()">📥 Pobierz dane JSON</button>
+        </div>
     </div>
 
     <div class="grid-layout">
@@ -393,7 +386,7 @@
             </div>
             <div>
                 <button class="btn btn-success" onclick="obsluzTicket()">📩 Wyślij Zgłoszenie</button>
-                <div id="msgTicket" class="alert-box alert-success">✅ Zgłoszenie trafiało na Discorda!</div>
+                <div id="msgTicket" class="alert-box alert-success">✅ Zgłoszenie trafiło na Discorda!</div>
             </div>
         </div>
 
@@ -432,25 +425,33 @@
     async function weryfikujPolaczenie() {
         const dot = document.getElementById('statusDot');
         const text = document.getElementById('statusText');
+        text.innerText = "Sprawdzanie połączenia...";
+        
         try {
-            const res = await fetch(`${API_BASE_URL}/api/data`);
+            const res = await fetch(`${API_BASE_URL}/api/data`, {
+                method: 'GET',
+                mode: 'cors'
+            });
             if (res.ok) {
                 dot.classList.add('online');
                 text.innerText = "Połączono z botem (API Aktywne)";
+                const data = await res.json();
+                wpiszDoKonsoli(data);
             } else {
                 dot.classList.remove('online');
-                text.innerText = "Błąd odpowiedzi serwera";
+                text.innerText = "Błąd odpowiedzi serwera (" + res.status + ")";
             }
         } catch (err) {
             dot.classList.remove('online');
-            text.innerText = "Brak połączenia z botem (Offline)";
+            text.innerText = "Brak połączenia z botem (Serwer wyłączony lub wybudza się na Render)";
+            wpiszDoKonsoli("❌ Błąd połączenia:\n" + err + "\n\nJeśli używasz darmowego hostingu Render, wybudzenie serwera z uśpienia może zająć do 50 sekund.");
         }
     }
 
     async function pobierzBazeDanych() {
         wpiszDoKonsoli("Pobieranie pełnej bazy danych...");
         try {
-            const res = await fetch(`${API_BASE_URL}/api/data`);
+            const res = await fetch(`${API_BASE_URL}/api/data`, { mode: 'cors' });
             const data = await res.json();
             wpiszDoKonsoli(data);
         } catch (err) {
@@ -463,6 +464,7 @@
         try {
             const res = await fetch(`${API_BASE_URL}${endpoint}`, {
                 method: 'POST',
+                mode: 'cors',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -472,6 +474,7 @@
             wpiszDoKonsoli(wynik);
             if (res.ok && wynik.status === "ok") {
                 wyswietlAlert(idAlertu);
+                weryfikujPolaczenie();
             }
         } catch (err) {
             wpiszDoKonsoli("❌ Błąd podczas wysyłania zapytania:\n" + err);
@@ -564,8 +567,10 @@
         document.getElementById('ticketOpis').value = "";
     }
 
-    // Automatyczne sprawdzanie stanu połączenia przy załadowaniu strony
-    weryfikujPolaczenie();
+    // Wywołanie sprawdzania stanu po załadowaniu drzewa DOM
+    document.addEventListener("DOMContentLoaded", () => {
+        weryfikujPolaczenie();
+    });
 </script>
 
 </body>
