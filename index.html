@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="pl" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PANEL LSO</title>
+    <!-- FontAwesome - Ikony -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0e0f12;
+            --bg-navbar: #121318;
+            --bg-card: #181a21;
+            --bg-input: #20232d;
+            --bg-input-hover: #262935;
+            --accent-blue: #5865f2;
+            --accent-blue-hover: #4752c4;
+            --accent-red: #ed4245;
+            --accent-gold: #f1c40f;
+            --accent-green: #2ecc71;
+            --text-main: #ffffff;
+            --text-muted: #8e9297;
+            --border-color: #23272d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        /* --- EKRAN LOGOWANIA --- */
+        #login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .login-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px 28px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-logo {
+            width: 70px;
+            height: 70px;
+            border-radius: 12px;
+            background-color: #ffffff;
+            padding: 4px;
+            margin-bottom: 20px;
+            object-fit: contain;
+        }
+
+        .login-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .login-input {
+            width: 100%;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+            margin-bottom: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .login-input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .login-btn {
+            width: 100%;
+            background-color: var(--accent-blue);
+            color: #ffffff;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .login-btn:hover {
+            background-color: var(--accent-blue-hover);
+        }
+
+        .error-message {
+            color: var(--accent-red);
+            font-size: 0.85rem;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* --- PANEL GŁÓWNY (Ukryty domyślnie) --- */
+        #main-panel {
+            display: none;
+        }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            background-color: var(--bg-navbar);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+        }
+
+        .navbar-brand img {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            object-fit: cover;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            list-style: none;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            color: var(--text-main);
+            background-color: var(--bg-input);
+        }
+
+        .nav-link.active {
+            background-color: var(--accent-blue);
+            color: #ffffff;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .theme-select {
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            outline: none;
+        }
+
+        .btn-logout {
+            background-color: rgba(237, 66, 69, 0.1);
+            color: var(--accent-red);
+            border: 1px solid rgba(237, 66, 69, 0.3);
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-logout:hover {
+            background-color: var(--accent-red);
+            color: #ffffff;
+        }
+
+        /* --- KONTENER I ZAKŁADKI --- */
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* --- FORMULARZE I KARTY --- */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .form-control, .form-select {
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--accent-blue);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        .btn-submit {
+            background-color: var(--accent-blue);
+            color: #ffffff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+            margin-top: 8px;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--accent-blue-hover);
+        }
+
+        /* --- STYL DLA GŁÓWNA --- */
+        .banner-card {
+            text-align: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .banner-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            background-color: #ffffff;
+            padding: 6px;
+            margin-bottom: 16px;
+            object-fit: contain;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .stat-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px 10px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .value-blue { color: #3498db; }
+        .value-gold { color: var(--accent-gold); }
+        .value-red { color: var(--accent-red); }
+        .value-green { color: var(--accent-green); }
+
+        /* --- STYL DLA GRAFIKU --- */
+        .btn-print {
+            background-color: var(--bg-input);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .day-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .day-title {
+            color: #3498db;
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .day-title.sunday {
+            color: var(--accent-gold);
+        }
+
+        .hours-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .hours-grid.three-cols {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .hour-block span {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .stats-grid, .hours-grid, .hours-grid.three-cols {
+                grid-template-columns: 1fr;
+            }
+            .navbar {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            .nav-links {
+                overflow-x: auto;
+                width: 100%;
+                padding-bottom: 5px;
+            }
+        }
+
+        /* Style do druku */
+        @media print {
+            .navbar, .btn-print, .btn-submit { display: none; }
+            body { background: white; color: black; }
+            .card, .day-card { border: 1px solid #ccc; background: white; color: black; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. EKRAN LOGOWANIA -->
+    <div id="login-screen">
+        <div class="login-card">
+            <img src="LSO.jpg" alt="Logo LSO" class="login-logo">
+            <div class="login-title">
+                <span>⛪ Logowanie LSO</span>
+            </div>
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <input type="password" id="admin-password" class="login-input" placeholder="Hasło Admina" required autofocus>
+                <button type="submit" class="login-btn">Zaloguj się</button>
+            </form>
+            <div id="error-msg" class="error-message">Niepoprawne hasło!</div>
+        </div>
+    </div>
+
+    <!-- 2. GŁÓWNY PANEL (AKTYWOWANY PO ZALOGOWANIU) -->
+    <div id="main-panel">
+        
+        <!-- PASEK NAWIGACYJNY -->
+        <nav class="navbar">
+            <div class="navbar-brand">
+                <img src="LSO.jpg" alt="Logo">
+                <span>PANEL LSO</span>
+            </div>
+
+            <ul class="nav-links">
+                <li><a class="nav-link active" onclick="switchTab('home', this)"><i class="fa-solid fa-house"></i> Główna</a></li>
+                <li><a class="nav-link" onclick="switchTab('grafik', this)"><i class="fa-solid fa-calendar-days"></i> Grafik & Druk</a></li>
+                <li><a class="nav-link" onclick="switchTab('okresowe', this)"><i class="fa-solid fa-church"></i> Nabożeństwa Okresowe</a></li>
+                <li><a class="nav-link" onclick="switchTab('ankiety', this)"><i class="fa-solid fa-chart-simple"></i> Ankiety</a></li>
+                <li><a class="nav-link" onclick="switchTab('ticket', this)"><i class="fa-solid fa-ticket"></i> Tickety</a></li>
+                <li><a class="nav-link" onclick="switchTab('msza', this)"><i class="fa-solid fa-book-bible"></i> Msza</a></li>
+                <li><a class="nav-link" onclick="switchTab('zbiorki', this)"><i class="fa-solid fa-bell"></i> Zbiórki</a></li>
+                <li><a class="nav-link" onclick="switchTab('ministranci', this)"><i class="fa-solid fa-users"></i> Ministranci</a></li>
+            </ul>
+
+            <div class="nav-right">
+                <select class="theme-select">
+                    <option>🌙 Ciemny</option>
+                </select>
+                <button class="btn-logout" onclick="logout()" title="Wyloguj"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+        </nav>
+
+        <div class="container">
+
+            <!-- TAB: GŁÓWNA -->
+            <div id="tab-home" class="tab-content active">
+                <div class="card banner-card">
+                    <img src="LSO.jpg" alt="Logo LSO" class="banner-logo">
+                    <h1>Liturgiczna Służba Ołtarza</h1>
+                    <p>Oficjalny Panel Zarządzania i Integracji z Serwerem Discord</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header"><i class="fa-solid fa-users"></i> Członkowie</div>
+                        <div class="stat-value value-blue">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header"><i class="fa-solid fa-chart-simple"></i> Ankiety</div>
+                        <div class="stat-value value-gold">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header"><i class="fa-solid fa-ticket"></i> Zgłoszenia</div>
+                        <div class="stat-value value-red">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header"><i class="fa-solid fa-check"></i> Zbiórka: Będą</div>
+                        <div class="stat-value value-green">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: GRAFIK & DRUK -->
+            <div id="tab-grafik" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-calendar-days text-primary"></i> Publikacja Grafiku</div>
+                        <button class="btn-print" onclick="window.print()"><i class="fa-solid fa-print"></i> Drukuj / Zapisz jako PDF</button>
+                    </div>
+
+                    <!-- Poniedziałek -->
+                    <div class="day-card">
+                        <div class="day-title"><i class="fa-regular fa-calendar"></i> Poniedziałek</div>
+                        <div class="hours-grid">
+                            <div class="hour-block">
+                                <span>07:00</span>
+                                <input type="text" class="form-control" value="Dyżurni">
+                            </div>
+                            <div class="hour-block">
+                                <span>18:00</span>
+                                <input type="text" class="form-control" value="Dyżurni">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Wtorek -->
+                    <div class="day-card">
+                        <div class="day-title"><i class="fa-regular fa-calendar"></i> Wtorek</div>
+                        <div class="hours-grid">
+                            <div class="hour-block">
+                                <span>07:00</span>
+                                <input type="text" class="form-control" value="Dyżurni">
+                            </div>
+                            <div class="hour-block">
+                                <span>18:00</span>
+                                <input type="text" class="form-control" value="Dyżurni">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Środa -->
+                    <div class="day-card">
+                        <div class="day-title"><i class="fa-regular fa-calendar"></i> Środa</div>
+                        <div class="hours-grid">
+                            <div class="hour-block">
+                                <span>07:00</span>
+                                <input type="text" class="form-control" value="Dyżurni">
+                            </div>
+                            <div class="hour-block">
+                                <span>18:00</span>
+                                <input type="text" class="form-control" value="Dyżurni">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Czwartek -->
+                    <div class="day-card">
+                        <div class="day-title"><i class="fa-regular fa-calendar"></i> Czwartek</div>
+                        <div class="hours-grid">
+                            <div class="hour-block">
+                                <span>07:00</span>
+                                <input type="text" class="form-control" value="Dyżurni">
+                            </div>
+                            <div class="hour-block">
+                                <span>18:00</span>
+                                <input type="text" class="form-control" value="Dyżurni">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Piątek -->
+                    <div class="day-card">
+                        <div class="day-title"><i class="fa-regular fa-calendar"></i> Piątek</div>
+                        <div class="hours-grid">
+                            <div class="hour-block">
+                                <span>07:00</span>
+                                <input type="text" class="form-control" value="Dyżurni">
+                            </div>
+                            <div class="hour-block">
+                                <span>18:00</span>
+                                <input type="text" class="form-control" value="Dyżurni">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sobota -->
+                    <div class="day-card">
+                        <div class="day-title"><i class="fa-regular fa-calendar"></i> Sobota</div>
+                        <div class="hours-grid">
+                            <div class="hour-block">
+                                <span>07:00</span>
+                                <input type="text" class="form-control" value="Dyżurni">
+                            </div>
+                            <div class="hour-block">
+                                <span>18:00</span>
+                                <input type="text" class="form-control" value="Dyżurni">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Niedziela -->
+                    <div class="day-card">
+                        <div class="day-title sunday"><i class="fa-solid fa-sun"></i> Niedziela</div>
+                        <div class="hours-grid three-cols">
+                            <div class="hour-block">
+                                <span>07:00</span>
+                                <input type="text" class="form-control" value="Grupa A">
+                            </div>
+                            <div class="hour-block">
+                                <span>10:30 & 12:00</span>
+                                <input type="text" class="form-control" value="Grupa B / C">
+                            </div>
+                            <div class="hour-block">
+                                <span>18:00</span>
+                                <input type="text" class="form-control" value="Młodzież">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn-submit" onclick="alert('Opublikowano Grafik na Discordzie!')">
+                        <i class="fa-solid fa-paper-plane"></i> Opublikuj Grafik na Discordzie
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB: NABOŻEŃSTWA OKRESOWE -->
+            <div id="tab-okresowe" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title" style="color: var(--accent-gold);"><i class="fa-solid fa-church"></i> Nabożeństwa Okresowe i Specjalne</div>
+                    </div>
+                    <form onsubmit="event.preventDefault(); alert('Opublikowano Nabożeństwo!');">
+                        <div class="form-group">
+                            <label>Rodzaj Nabożeństwa</label>
+                            <select class="form-select">
+                                <option>🎉 Odpust Parafialny</option>
+                                <option>🍞 Wielki Czwartek</option>
+                                <option>✝️ Wielki Piątek</option>
+                                <option>🔥 Wielka Sobota</option>
+                                <option>✝️ Droga Krzyżowa</option>
+                                <option>🕯️ Gorzkie Żale</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Data i Godzina</label>
+                            <input type="text" class="form-control" placeholder="">
+                        </div>
+                        <div class="form-group">
+                            <label>Wyznaczony Asysta / Obsada</label>
+                            <textarea class="form-control" placeholder=""></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit"><i class="fa-solid fa-paper-plane"></i> Opublikuj Nabożeństwo Okresowe</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TAB: ANKIETY -->
+            <div id="tab-ankiety" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title" style="color: #3498db;"><i class="fa-solid fa-chart-simple"></i> Stwórz Nową Ankietę</div>
+                    </div>
+                    <form onsubmit="event.preventDefault(); alert('Wysłano ankietę!');">
+                        <div class="form-group">
+                            <label>Pytanie Ankiety</label>
+                            <input type="text" class="form-control" placeholder="">
+                        </div>
+                        <div class="form-group">
+                            <label>Opcje (oddzielone przecinkami)</label>
+                            <input type="text" class="form-control" placeholder="">
+                        </div>
+                        <button type="submit" class="btn-submit"><i class="fa-solid fa-bullhorn"></i> Wyślij Ankietę na Discorda</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TAB: TICKETY -->
+            <div id="tab-ticket" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title" style="color: var(--accent-red);"><i class="fa-solid fa-ticket"></i> Zgłoszenia / Ticket do Zarządu</div>
+                    </div>
+                    <form onsubmit="event.preventDefault(); alert('Wysłano zgłoszenie!');">
+                        <div class="form-group">
+                            <label>Twoje Imię i Nazwisko / Nick Discord</label>
+                            <input type="text" class="form-control" placeholder="">
+                        </div>
+                        <div class="form-group">
+                            <label>Temat zgłoszenia</label>
+                            <input type="text" class="form-control" placeholder="">
+                        </div>
+                        <div class="form-group">
+                            <label>Opis sprawy</label>
+                            <textarea class="form-control" placeholder=""></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit"><i class="fa-solid fa-paper-plane"></i> Wyślij Zgłoszenie na Discorda</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TAB: MSZA -->
+            <div id="tab-msza" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title" style="color: #3498db;"><i class="fa-solid fa-cross"></i> Czytania i Oprawa Mszy</div>
+                    </div>
+                    <form onsubmit="event.preventDefault(); alert('Opublikowano czytania!');">
+                        <div class="form-group">
+                            <label>Celebrator</label>
+                            <input type="text" class="form-control" placeholder="">
+                        </div>
+                        <div class="form-group">
+                            <label>Kolor Liturgiczny</label>
+                            <input type="text" class="form-control" placeholder="">
+                        </div>
+                        <div class="form-group">
+                            <label>Pełny Tekst Czytań</label>
+                            <textarea class="form-control" placeholder=""></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit"><i class="fa-solid fa-paper-plane"></i> Opublikuj Czytania</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TAB: ZBIÓRKI -->
+            <div id="tab-zbiorki" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title" style="color: var(--accent-gold);"><i class="fa-solid fa-bullhorn"></i> Zbiórka</div>
+                    </div>
+                    <form onsubmit="event.preventDefault(); alert('Wysłano powiadomienie o zbiórce!');">
+                        <div class="form-group">
+                            <label>Kiedy</label>
+                            <input type="text" class="form-control" placeholder="">
+                        </div>
+                        <div class="form-group">
+                            <label>Szczegóły</label>
+                            <textarea class="form-control" placeholder=""></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit"><i class="fa-solid fa-paper-plane"></i> Wyślij Zbiórkę</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TAB: MINISTRANCI -->
+            <div id="tab-ministranci" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title" style="color: var(--accent-green);"><i class="fa-solid fa-user-plus"></i> Dodaj / Edytuj Ministranta</div>
+                    </div>
+                    <form onsubmit="event.preventDefault(); alert('Zapisano dane ministranta!');">
+                        <div class="form-group">
+                            <label>ID Discord</label>
+                            <input type="text" class="form-control" placeholder="">
+                        </div>
+                        <div class="form-group">
+                            <label>Imię i Nazwisko</label>
+                            <input type="text" class="form-control" placeholder="">
+                        </div>
+                        <div class="form-group">
+                            <label>Ranga</label>
+                            <select class="form-select">
+                                <option>Kandydat</option>
+                                <option>Chórzysta</option>
+                                <option>Ministrant Light / Chrapka</option>
+                                <option>Ministrant Księgi</option>
+                                <option>Lektor</option>
+                                <option>Ceremoniarz</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-submit"><i class="fa-solid fa-user-check"></i> Zapisz i Nadaj Rango-Rolę</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SKRYPT LOGOWANIA I NAWIGACJI -->
+    <script>
+        const ADMIN_PASSWORD = "admin";
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const inputPass = document.getElementById('admin-password').value;
+            const errorMsg = document.getElementById('error-msg');
+
+            if (inputPass === ADMIN_PASSWORD) {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('main-panel').style.display = 'block';
+            } else {
+                errorMsg.style.display = 'block';
+            }
+        }
+
+        function logout() {
+            document.getElementById('main-panel').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('admin-password').value = '';
+            document.getElementById('error-msg').style.display = 'none';
+        }
+
+        function switchTab(tabId, element) {
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            const links = document.querySelectorAll('.nav-link');
+            links.forEach(link => link.classList.remove('active'));
+
+            document.getElementById('tab-' + tabId).classList.add('active');
+            element.classList.add('active');
+        }
+    </script>
+</body>
+</html>
