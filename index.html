@@ -1,838 +1,572 @@
 <!DOCTYPE html>
-<html lang="pl" data-theme="dark">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PANEL LSO</title>
-    <!-- FontAwesome - Ikony -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <title>Panel Zarządzania Liturgiczną Służbą Ołtarza (LSO)</title>
     <style>
         :root {
-            --bg-primary: #0e0f12;
-            --bg-navbar: #121318;
-            --bg-card: #181a21;
-            --bg-input: #20232d;
-            --bg-input-hover: #262935;
-            --accent-blue: #5865f2;
-            --accent-blue-hover: #4752c4;
-            --accent-red: #ed4245;
-            --accent-gold: #f1c40f;
-            --accent-green: #2ecc71;
-            --text-main: #ffffff;
-            --text-muted: #8e9297;
-            --border-color: #23272d;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-blue: #38bdf8;
+            --accent-blue-hover: #0284c7;
+            --accent-green: #22c55e;
+            --accent-green-hover: #16a34a;
+            --accent-red: #ef4444;
+            --accent-purple: #a855f7;
+            --accent-gold: #eab308;
+            --border-color: #475569;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
             background-color: var(--bg-primary);
             color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
             min-height: 100vh;
+            padding: 40px 20px;
         }
 
-        /* --- EKRAN LOGOWANIA --- */
-        #login-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: var(--bg-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .login-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 32px 28px;
+        .container {
             width: 100%;
-            max-width: 400px;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        header {
             text-align: center;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .login-logo {
-            width: 70px;
-            height: 70px;
+            background-color: var(--bg-secondary);
+            padding: 24px;
             border-radius: 12px;
-            background-color: #ffffff;
-            padding: 4px;
-            margin-bottom: 20px;
-            object-fit: contain;
-        }
-
-        .login-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .login-input {
-            width: 100%;
-            background-color: var(--bg-input);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
             border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 12px 16px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            outline: none;
-            margin-bottom: 16px;
-            transition: border-color 0.2s;
         }
 
-        .login-input:focus {
-            border-color: var(--accent-blue);
+        header h1 {
+            color: var(--accent-blue);
+            font-size: 28px;
+            margin-bottom: 8px;
         }
 
-        .login-btn {
-            width: 100%;
-            background-color: var(--accent-blue);
-            color: #ffffff;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
+        header p {
+            color: var(--text-muted);
+            font-size: 14px;
         }
 
-        .login-btn:hover {
-            background-color: var(--accent-blue-hover);
-        }
-
-        .error-message {
-            color: var(--accent-red);
-            font-size: 0.85rem;
-            margin-top: 10px;
-            display: none;
-        }
-
-        /* --- PANEL GŁÓWNY (Ukryty domyślnie) --- */
-        #main-panel {
-            display: none;
-        }
-
-        /* --- NAVBAR --- */
-        .navbar {
-            background-color: var(--bg-navbar);
-            border-bottom: 1px solid var(--border-color);
-            padding: 0.75rem 1.5rem;
+        .status-card {
+            background-color: var(--bg-secondary);
+            padding: 16px 20px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .navbar-brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 800;
-            font-size: 1.1rem;
-            letter-spacing: 0.5px;
-        }
-
-        .navbar-brand img {
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
-            object-fit: cover;
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            list-style: none;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 600;
-            border-radius: 8px;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-
-        .nav-link:hover {
-            color: var(--text-main);
-            background-color: var(--bg-input);
-        }
-
-        .nav-link.active {
-            background-color: var(--accent-blue);
-            color: #ffffff;
-        }
-
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .theme-select {
-            background-color: var(--bg-card);
-            color: var(--text-main);
             border: 1px solid var(--border-color);
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            outline: none;
         }
 
-        .btn-logout {
-            background-color: rgba(237, 66, 69, 0.1);
-            color: var(--accent-red);
-            border: 1px solid rgba(237, 66, 69, 0.3);
-            padding: 6px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .btn-logout:hover {
-            background-color: var(--accent-red);
-            color: #ffffff;
-        }
-
-        /* --- KONTENER I ZAKŁADKI --- */
-        .container {
-            max-width: 900px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
+        .status-info {
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--accent-red);
+            box-shadow: 0 0 8px var(--accent-red);
+            transition: all 0.3s ease;
+        }
+
+        .status-indicator.online {
+            background-color: var(--accent-green);
+            box-shadow: 0 0 8px var(--accent-green);
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
             gap: 20px;
         }
 
-        /* --- FORMULARZE I KARTY --- */
         .card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
+            background-color: var(--bg-secondary);
             border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .card-header {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
+            gap: 10px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
         }
 
-        .card-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.1rem;
-            font-weight: 700;
+        .card-header h2 {
+            font-size: 18px;
+            color: var(--text-main);
         }
 
         .form-group {
-            margin-bottom: 18px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+            margin-bottom: 14px;
         }
 
-        .form-group label {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-main);
+        label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 500;
         }
 
-        .form-control, .form-select {
-            background-color: var(--bg-input);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 12px 14px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            outline: none;
+        input[type="text"],
+        select,
+        textarea {
             width: 100%;
+            padding: 10px 12px;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-main);
+            font-size: 14px;
             transition: border-color 0.2s;
         }
 
-        .form-control:focus, .form-select:focus {
+        input[type="text"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
             border-color: var(--accent-blue);
         }
 
-        textarea.form-control {
+        textarea {
             resize: vertical;
-            min-height: 90px;
+            min-height: 80px;
         }
 
-        .btn-submit {
-            background-color: var(--accent-blue);
-            color: #ffffff;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
+        .btn {
             width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: background-color 0.2s;
-            margin-top: 8px;
-        }
-
-        .btn-submit:hover {
-            background-color: var(--accent-blue-hover);
-        }
-
-        /* --- STYL DLA GŁÓWNA --- */
-        .banner-card {
-            text-align: center;
-            align-items: center;
-            padding: 40px 20px;
-        }
-
-        .banner-logo {
-            width: 80px;
-            height: 80px;
-            border-radius: 12px;
-            background-color: #ffffff;
-            padding: 6px;
-            margin-bottom: 16px;
-            object-fit: contain;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-        }
-
-        .stat-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 20px 10px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .stat-header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .stat-value {
-            font-size: 1.6rem;
-            font-weight: 700;
-        }
-
-        .value-blue { color: #3498db; }
-        .value-gold { color: var(--accent-gold); }
-        .value-red { color: var(--accent-red); }
-        .value-green { color: var(--accent-green); }
-
-        /* --- STYL DLA GRAFIKU --- */
-        .btn-print {
-            background-color: var(--bg-input);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            padding: 8px 14px;
+            padding: 12px;
+            border: none;
             border-radius: 6px;
-            font-size: 0.85rem;
             font-weight: 600;
+            font-size: 14px;
             cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
         }
 
-        .day-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-blue);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-blue-hover);
+            color: #fff;
+        }
+
+        .btn-success {
+            background-color: var(--accent-green);
+            color: #000;
+        }
+
+        .btn-success:hover {
+            background-color: var(--accent-green-hover);
+            color: #fff;
+        }
+
+        .alert-box {
+            margin-top: 10px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background-color: rgba(34, 197, 94, 0.15);
+            border: 1px solid var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .alert-error {
+            background-color: rgba(239, 68, 68, 0.15);
+            border: 1px solid var(--accent-red);
+            color: var(--accent-red);
+        }
+
+        .console-card {
+            grid-column: 1 / -1;
+        }
+
+        pre {
+            background-color: var(--bg-primary);
             padding: 16px;
-            margin-bottom: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            color: var(--accent-green);
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
+            font-size: 13px;
+            max-height: 250px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
         }
 
-        .day-title {
-            color: #3498db;
-            font-weight: 700;
-            font-size: 0.95rem;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .full-width {
+            grid-column: 1 / -1;
         }
 
-        .day-title.sunday {
-            color: var(--accent-gold);
-        }
-
-        .hours-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        .hours-grid.three-cols {
-            grid-template-columns: repeat(3, 1fr);
-        }
-
-        .hour-block span {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            display: block;
-            margin-bottom: 4px;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .stats-grid, .hours-grid, .hours-grid.three-cols {
+        @media (max-width: 600px) {
+            .grid-layout {
                 grid-template-columns: 1fr;
             }
-            .navbar {
-                flex-wrap: wrap;
-                gap: 10px;
-            }
-            .nav-links {
-                overflow-x: auto;
-                width: 100%;
-                padding-bottom: 5px;
-            }
-        }
-
-        /* Style do druku */
-        @media print {
-            .navbar, .btn-print, .btn-submit { display: none; }
-            body { background: white; color: black; }
-            .card, .day-card { border: 1px solid #ccc; background: white; color: black; }
         }
     </style>
 </head>
 <body>
 
-    <!-- 1. EKRAN LOGOWANIA -->
-    <div id="login-screen">
-        <div class="login-card">
-            <img src="LSO.jpg" alt="Logo LSO" class="login-logo">
-            <div class="login-title">
-                <span>⛪ Logowanie LSO</span>
-            </div>
-            <form id="login-form" onsubmit="handleLogin(event)">
-                <input type="password" id="admin-password" class="login-input" placeholder="Hasło Admina" required autofocus>
-                <button type="submit" class="login-btn">Zaloguj się</button>
-            </form>
-            <div id="error-msg" class="error-message">Niepoprawne hasło!</div>
+<div class="container">
+    <header>
+        <h1>Panel Zarządzania LSO</h1>
+        <p>System integracji strony internetowej z botem Discord</p>
+    </header>
+
+    <div class="status-card">
+        <div class="status-info">
+            <div id="statusDot" class="status-indicator"></div>
+            <span id="statusText">Sprawdzanie połączenia z serwerem API...</span>
         </div>
+        <button class="btn btn-primary" style="width: auto; padding: 8px 16px;" onclick="pobierzBazeDanych()">📥 Pobierz dane JSON</button>
     </div>
 
-    <!-- 2. GŁÓWNY PANEL (AKTYWOWANY PO ZALOGOWANIU) -->
-    <div id="main-panel">
-        
-        <!-- PASEK NAWIGACYJNY -->
-        <nav class="navbar">
-            <div class="navbar-brand">
-                <img src="LSO.jpg" alt="Logo">
-                <span>PANEL LSO</span>
-            </div>
-
-            <ul class="nav-links">
-                <li><a class="nav-link active" onclick="switchTab('home', this)"><i class="fa-solid fa-house"></i> Główna</a></li>
-                <li><a class="nav-link" onclick="switchTab('grafik', this)"><i class="fa-solid fa-calendar-days"></i> Grafik & Druk</a></li>
-                <li><a class="nav-link" onclick="switchTab('okresowe', this)"><i class="fa-solid fa-church"></i> Nabożeństwa Okresowe</a></li>
-                <li><a class="nav-link" onclick="switchTab('ankiety', this)"><i class="fa-solid fa-chart-simple"></i> Ankiety</a></li>
-                <li><a class="nav-link" onclick="switchTab('ticket', this)"><i class="fa-solid fa-ticket"></i> Tickety</a></li>
-                <li><a class="nav-link" onclick="switchTab('msza', this)"><i class="fa-solid fa-book-bible"></i> Msza</a></li>
-                <li><a class="nav-link" onclick="switchTab('zbiorki', this)"><i class="fa-solid fa-bell"></i> Zbiórki</a></li>
-                <li><a class="nav-link" onclick="switchTab('ministranci', this)"><i class="fa-solid fa-users"></i> Ministranci</a></li>
-            </ul>
-
-            <div class="nav-right">
-                <select class="theme-select">
-                    <option>🌙 Ciemny</option>
-                </select>
-                <button class="btn-logout" onclick="logout()" title="Wyloguj"><i class="fa-solid fa-right-from-bracket"></i></button>
-            </div>
-        </nav>
-
-        <div class="container">
-
-            <!-- TAB: GŁÓWNA -->
-            <div id="tab-home" class="tab-content active">
-                <div class="card banner-card">
-                    <img src="LSO.jpg" alt="Logo LSO" class="banner-logo">
-                    <h1>Liturgiczna Służba Ołtarza</h1>
-                    <p>Oficjalny Panel Zarządzania i Integracji z Serwerem Discord</p>
+    <div class="grid-layout">
+        <!-- FORMULARZ 1: DODAWANIE MINISTRANTA -->
+        <div class="card">
+            <div>
+                <div class="card-header">
+                    <h2>👤 Dodaj Ministranta</h2>
                 </div>
-
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-header"><i class="fa-solid fa-users"></i> Członkowie</div>
-                        <div class="stat-value value-blue">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-header"><i class="fa-solid fa-chart-simple"></i> Ankiety</div>
-                        <div class="stat-value value-gold">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-header"><i class="fa-solid fa-ticket"></i> Zgłoszenia</div>
-                        <div class="stat-value value-red">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-header"><i class="fa-solid fa-check"></i> Zbiórka: Będą</div>
-                        <div class="stat-value value-green">0</div>
-                    </div>
+                <div class="form-group">
+                    <label for="minNick">Nick / Imię i Nazwisko</label>
+                    <input type="text" id="minNick" placeholder="np. Jan Kowalski">
+                </div>
+                <div class="form-group">
+                    <label for="minRanga">Przydzielona Ranga</label>
+                    <select id="minRanga">
+                        <option value="Kandydat">Kandydat</option>
+                        <option value="Ministrant">Ministrant</option>
+                        <option value="Starszy Ministrant">Starszy Ministrant</option>
+                        <option value="Lektor">Lektor</option>
+                        <option value="Starszy Lektor">Starszy Lektor</option>
+                        <option value="Prezes">Prezes</option>
+                        <option value="Zawieszony">Zawieszony</option>
+                    </select>
                 </div>
             </div>
+            <div>
+                <button class="btn btn-success" onclick="obsluzDodawanieMinistranta()">➕ Zapisz i Wyślij</button>
+                <div id="msgAddMin" class="alert-box alert-success">✅ Pomyślnie dodano ministranta!</div>
+            </div>
+        </div>
 
-            <!-- TAB: GRAFIK & DRUK -->
-            <div id="tab-grafik" class="tab-content">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title"><i class="fa-solid fa-calendar-days text-primary"></i> Publikacja Grafiku</div>
-                        <button class="btn-print" onclick="window.print()"><i class="fa-solid fa-print"></i> Drukuj / Zapisz jako PDF</button>
-                    </div>
-
-                    <!-- Poniedziałek -->
-                    <div class="day-card">
-                        <div class="day-title"><i class="fa-regular fa-calendar"></i> Poniedziałek</div>
-                        <div class="hours-grid">
-                            <div class="hour-block">
-                                <span>07:00</span>
-                                <input type="text" class="form-control" value="Dyżurni">
-                            </div>
-                            <div class="hour-block">
-                                <span>18:00</span>
-                                <input type="text" class="form-control" value="Dyżurni">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Wtorek -->
-                    <div class="day-card">
-                        <div class="day-title"><i class="fa-regular fa-calendar"></i> Wtorek</div>
-                        <div class="hours-grid">
-                            <div class="hour-block">
-                                <span>07:00</span>
-                                <input type="text" class="form-control" value="Dyżurni">
-                            </div>
-                            <div class="hour-block">
-                                <span>18:00</span>
-                                <input type="text" class="form-control" value="Dyżurni">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Środa -->
-                    <div class="day-card">
-                        <div class="day-title"><i class="fa-regular fa-calendar"></i> Środa</div>
-                        <div class="hours-grid">
-                            <div class="hour-block">
-                                <span>07:00</span>
-                                <input type="text" class="form-control" value="Dyżurni">
-                            </div>
-                            <div class="hour-block">
-                                <span>18:00</span>
-                                <input type="text" class="form-control" value="Dyżurni">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Czwartek -->
-                    <div class="day-card">
-                        <div class="day-title"><i class="fa-regular fa-calendar"></i> Czwartek</div>
-                        <div class="hours-grid">
-                            <div class="hour-block">
-                                <span>07:00</span>
-                                <input type="text" class="form-control" value="Dyżurni">
-                            </div>
-                            <div class="hour-block">
-                                <span>18:00</span>
-                                <input type="text" class="form-control" value="Dyżurni">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Piątek -->
-                    <div class="day-card">
-                        <div class="day-title"><i class="fa-regular fa-calendar"></i> Piątek</div>
-                        <div class="hours-grid">
-                            <div class="hour-block">
-                                <span>07:00</span>
-                                <input type="text" class="form-control" value="Dyżurni">
-                            </div>
-                            <div class="hour-block">
-                                <span>18:00</span>
-                                <input type="text" class="form-control" value="Dyżurni">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Sobota -->
-                    <div class="day-card">
-                        <div class="day-title"><i class="fa-regular fa-calendar"></i> Sobota</div>
-                        <div class="hours-grid">
-                            <div class="hour-block">
-                                <span>07:00</span>
-                                <input type="text" class="form-control" value="Dyżurni">
-                            </div>
-                            <div class="hour-block">
-                                <span>18:00</span>
-                                <input type="text" class="form-control" value="Dyżurni">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Niedziela -->
-                    <div class="day-card">
-                        <div class="day-title sunday"><i class="fa-solid fa-sun"></i> Niedziela</div>
-                        <div class="hours-grid three-cols">
-                            <div class="hour-block">
-                                <span>07:00</span>
-                                <input type="text" class="form-control" value="Grupa A">
-                            </div>
-                            <div class="hour-block">
-                                <span>10:30 & 12:00</span>
-                                <input type="text" class="form-control" value="Grupa B / C">
-                            </div>
-                            <div class="hour-block">
-                                <span>18:00</span>
-                                <input type="text" class="form-control" value="Młodzież">
-                            </div>
-                        </div>
-                    </div>
-
-                    <button class="btn-submit" onclick="alert('Opublikowano Grafik na Discordzie!')">
-                        <i class="fa-solid fa-paper-plane"></i> Opublikuj Grafik na Discordzie
-                    </button>
+        <!-- FORMULARZ 2: PUBLIKACJA GRAFIKU -->
+        <div class="card">
+            <div>
+                <div class="card-header">
+                    <h2>📅 Opublikuj Grafik</h2>
+                </div>
+                <div class="form-group">
+                    <label for="grafikTytul">Tytuł Grafiku</label>
+                    <input type="text" id="grafikTytul" placeholder="np. Grafik na Tydzień 17.08 - 23.08">
+                </div>
+                <div class="form-group">
+                    <label for="grafikTresc">Szczegóły / Rozpiska Dyżurów</label>
+                    <textarea id="grafikTresc" placeholder="Niedziela 8:00 - Jan, Piotr&#10;Niedziela 10:00 - Adam, Michał"></textarea>
                 </div>
             </div>
+            <div>
+                <button class="btn btn-success" onclick="obsluzOpublikowanieGrafiku()">📤 Opublikuj Grafik</button>
+                <div id="msgGrafik" class="alert-box alert-success">✅ Grafik został pomyślnie wysłany!</div>
+            </div>
+        </div>
 
-            <!-- TAB: NABOŻEŃSTWA OKRESOWE -->
-            <div id="tab-okresowe" class="tab-content">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title" style="color: var(--accent-gold);"><i class="fa-solid fa-church"></i> Nabożeństwa Okresowe i Specjalne</div>
-                    </div>
-                    <form onsubmit="event.preventDefault(); alert('Opublikowano Nabożeństwo!');">
-                        <div class="form-group">
-                            <label>Rodzaj Nabożeństwa</label>
-                            <select class="form-select">
-                                <option>🎉 Odpust Parafialny</option>
-                                <option>🍞 Wielki Czwartek</option>
-                                <option>✝️ Wielki Piątek</option>
-                                <option>🔥 Wielka Sobota</option>
-                                <option>✝️ Droga Krzyżowa</option>
-                                <option>🕯️ Gorzkie Żale</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Data i Godzina</label>
-                            <input type="text" class="form-control" placeholder="">
-                        </div>
-                        <div class="form-group">
-                            <label>Wyznaczony Asysta / Obsada</label>
-                            <textarea class="form-control" placeholder=""></textarea>
-                        </div>
-                        <button type="submit" class="btn-submit"><i class="fa-solid fa-paper-plane"></i> Opublikuj Nabożeństwo Okresowe</button>
-                    </form>
+        <!-- FORMULARZ 3: OGŁOSZENIE MSZA -->
+        <div class="card">
+            <div>
+                <div class="card-header">
+                    <h2>📢 Ogłoszenie / Służba</h2>
+                </div>
+                <div class="form-group">
+                    <label for="mszaTresc">Treść Komunikatu (@everyone)</label>
+                    <textarea id="mszaTresc" placeholder="Wpisz treść ogłoszenia parafialnego lub informacji dla LSO..."></textarea>
                 </div>
             </div>
+            <div>
+                <button class="btn btn-success" onclick="obsluzWysylanieMszy()">📢 Wyślij Ogłoszenie</button>
+                <div id="msgMsza" class="alert-box alert-success">✅ Ogłoszenie wysłane na kanał Discord!</div>
+            </div>
+        </div>
 
-            <!-- TAB: ANKIETY -->
-            <div id="tab-ankiety" class="tab-content">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title" style="color: #3498db;"><i class="fa-solid fa-chart-simple"></i> Stwórz Nową Ankietę</div>
-                    </div>
-                    <form onsubmit="event.preventDefault(); alert('Wysłano ankietę!');">
-                        <div class="form-group">
-                            <label>Pytanie Ankiety</label>
-                            <input type="text" class="form-control" placeholder="">
-                        </div>
-                        <div class="form-group">
-                            <label>Opcje (oddzielone przecinkami)</label>
-                            <input type="text" class="form-control" placeholder="">
-                        </div>
-                        <button type="submit" class="btn-submit"><i class="fa-solid fa-bullhorn"></i> Wyślij Ankietę na Discorda</button>
-                    </form>
+        <!-- FORMULARZ 4: OGŁOSZENIE ZBIÓRKI -->
+        <div class="card">
+            <div>
+                <div class="card-header">
+                    <h2>📌 Zaplanuj Zbiórkę</h2>
+                </div>
+                <div class="form-group">
+                    <label for="zbiorkaData">Termin Zbiórki</label>
+                    <input type="text" id="zbiorkaData" placeholder="np. Sobota, godz. 10:00 w salce">
                 </div>
             </div>
+            <div>
+                <button class="btn btn-success" onclick="obsluzZbiorke()">📌 Wyślij Zbiórkę z Przyciskami</button>
+                <div id="msgZbiorka" class="alert-box alert-success">✅ Powiadomienie o zbiórce wysłane!</div>
+            </div>
+        </div>
 
-            <!-- TAB: TICKETY -->
-            <div id="tab-ticket" class="tab-content">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title" style="color: var(--accent-red);"><i class="fa-solid fa-ticket"></i> Zgłoszenia / Ticket do Zarządu</div>
-                    </div>
-                    <form onsubmit="event.preventDefault(); alert('Wysłano zgłoszenie!');">
-                        <div class="form-group">
-                            <label>Twoje Imię i Nazwisko / Nick Discord</label>
-                            <input type="text" class="form-control" placeholder="">
-                        </div>
-                        <div class="form-group">
-                            <label>Temat zgłoszenia</label>
-                            <input type="text" class="form-control" placeholder="">
-                        </div>
-                        <div class="form-group">
-                            <label>Opis sprawy</label>
-                            <textarea class="form-control" placeholder=""></textarea>
-                        </div>
-                        <button type="submit" class="btn-submit"><i class="fa-solid fa-paper-plane"></i> Wyślij Zgłoszenie na Discorda</button>
-                    </form>
+        <!-- FORMULARZ 5: ANKIETA -->
+        <div class="card">
+            <div>
+                <div class="card-header">
+                    <h2>📊 Stwórz Ankietę</h2>
+                </div>
+                <div class="form-group">
+                    <label for="ankietaPytanie">Pytanie Ankiety</label>
+                    <input type="text" id="ankietaPytanie" placeholder="np. Czy pasuje Wam wyjazd w sobotę?">
+                </div>
+                <div class="form-group">
+                    <label for="ankietaOpcje">Opcje odpowiedzi (rozdzielone przecinkami)</label>
+                    <input type="text" id="ankietaOpcje" placeholder="Tak, Nie, Nie mam zdania">
                 </div>
             </div>
+            <div>
+                <button class="btn btn-success" onclick="obsluzAnkiete()">📊 Opublikuj Ankietę</button>
+                <div id="msgAnkieta" class="alert-box alert-success">✅ Ankieta z reakcjami utworzona!</div>
+            </div>
+        </div>
 
-            <!-- TAB: MSZA -->
-            <div id="tab-msza" class="tab-content">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title" style="color: #3498db;"><i class="fa-solid fa-cross"></i> Czytania i Oprawa Mszy</div>
-                    </div>
-                    <form onsubmit="event.preventDefault(); alert('Opublikowano czytania!');">
-                        <div class="form-group">
-                            <label>Celebrator</label>
-                            <input type="text" class="form-control" placeholder="">
-                        </div>
-                        <div class="form-group">
-                            <label>Kolor Liturgiczny</label>
-                            <input type="text" class="form-control" placeholder="">
-                        </div>
-                        <div class="form-group">
-                            <label>Pełny Tekst Czytań</label>
-                            <textarea class="form-control" placeholder=""></textarea>
-                        </div>
-                        <button type="submit" class="btn-submit"><i class="fa-solid fa-paper-plane"></i> Opublikuj Czytania</button>
-                    </form>
+        <!-- FORMULARZ 6: TICKET / ZGŁOSZENIE -->
+        <div class="card">
+            <div>
+                <div class="card-header">
+                    <h2>📩 Zgłoszenie / Sprawa</h2>
+                </div>
+                <div class="form-group">
+                    <label for="ticketTytul">Tytuł Zgłoszenia</label>
+                    <input type="text" id="ticketTytul" placeholder="np. Uszkodzony albat">
+                </div>
+                <div class="form-group">
+                    <label for="ticketOpis">Opis Sprawy</label>
+                    <textarea id="ticketOpis" placeholder="Opisz dokładnie problem lub sprawę do załatwienia..."></textarea>
                 </div>
             </div>
-
-            <!-- TAB: ZBIÓRKI -->
-            <div id="tab-zbiorki" class="tab-content">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title" style="color: var(--accent-gold);"><i class="fa-solid fa-bullhorn"></i> Zbiórka</div>
-                    </div>
-                    <form onsubmit="event.preventDefault(); alert('Wysłano powiadomienie o zbiórce!');">
-                        <div class="form-group">
-                            <label>Kiedy</label>
-                            <input type="text" class="form-control" placeholder="">
-                        </div>
-                        <div class="form-group">
-                            <label>Szczegóły</label>
-                            <textarea class="form-control" placeholder=""></textarea>
-                        </div>
-                        <button type="submit" class="btn-submit"><i class="fa-solid fa-paper-plane"></i> Wyślij Zbiórkę</button>
-                    </form>
-                </div>
+            <div>
+                <button class="btn btn-success" onclick="obsluzTicket()">📩 Wyślij Zgłoszenie</button>
+                <div id="msgTicket" class="alert-box alert-success">✅ Zgłoszenie trafiało na Discorda!</div>
             </div>
+        </div>
 
-            <!-- TAB: MINISTRANCI -->
-            <div id="tab-ministranci" class="tab-content">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title" style="color: var(--accent-green);"><i class="fa-solid fa-user-plus"></i> Dodaj / Edytuj Ministranta</div>
-                    </div>
-                    <form onsubmit="event.preventDefault(); alert('Zapisano dane ministranta!');">
-                        <div class="form-group">
-                            <label>ID Discord</label>
-                            <input type="text" class="form-control" placeholder="">
-                        </div>
-                        <div class="form-group">
-                            <label>Imię i Nazwisko</label>
-                            <input type="text" class="form-control" placeholder="">
-                        </div>
-                        <div class="form-group">
-                            <label>Ranga</label>
-                            <select class="form-select">
-                                <option>Kandydat</option>
-                                <option>Chórzysta</option>
-                                <option>Ministrant Light / Chrapka</option>
-                                <option>Ministrant Księgi</option>
-                                <option>Lektor</option>
-                                <option>Ceremoniarz</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn-submit"><i class="fa-solid fa-user-check"></i> Zapisz i Nadaj Rango-Rolę</button>
-                    </form>
-                </div>
+        <!-- PODGLĄD KONSOLI API -->
+        <div class="card console-card">
+            <div class="card-header">
+                <h2>🖥️ Podgląd Konsoli i Odpowiedzi API</h2>
             </div>
-
+            <pre id="outputConsole">Brak wykonanych operacji. Wybierz dowolną akcję powyżej...</pre>
         </div>
     </div>
+</div>
 
-    <!-- SKRYPT LOGOWANIA I NAWIGACJI -->
-    <script>
-        const ADMIN_PASSWORD = "admin";
+<script>
+    const API_BASE_URL = "https://bot-lso.onrender.com";
 
-        function handleLogin(event) {
-            event.preventDefault();
-            const inputPass = document.getElementById('admin-password').value;
-            const errorMsg = document.getElementById('error-msg');
+    function wyswietlAlert(elementId) {
+        const el = document.getElementById(elementId);
+        if (el) {
+            el.style.display = "block";
+            setTimeout(() => {
+                el.style.display = "none";
+            }, 4000);
+        }
+    }
 
-            if (inputPass === ADMIN_PASSWORD) {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('main-panel').style.display = 'block';
+    function wpiszDoKonsoli(tresc) {
+        const consoleEl = document.getElementById('outputConsole');
+        if (typeof tresc === 'object') {
+            consoleEl.innerText = JSON.stringify(tresc, null, 2);
+        } else {
+            consoleEl.innerText = tresc;
+        }
+    }
+
+    async function weryfikujPolaczenie() {
+        const dot = document.getElementById('statusDot');
+        const text = document.getElementById('statusText');
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/data`);
+            if (res.ok) {
+                dot.classList.add('online');
+                text.innerText = "Połączono z botem (API Aktywne)";
             } else {
-                errorMsg.style.display = 'block';
+                dot.classList.remove('online');
+                text.innerText = "Błąd odpowiedzi serwera";
             }
+        } catch (err) {
+            dot.classList.remove('online');
+            text.innerText = "Brak połączenia z botem (Offline)";
+        }
+    }
+
+    async function pobierzBazeDanych() {
+        wpiszDoKonsoli("Pobieranie pełnej bazy danych...");
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/data`);
+            const data = await res.json();
+            wpiszDoKonsoli(data);
+        } catch (err) {
+            wpiszDoKonsoli("❌ Błąd podczas pobierania danych:\n" + err);
+        }
+    }
+
+    async function wyślijZapytaniePOST(endpoint, dane, idAlertu) {
+        wpiszDoKonsoli("Wysyłanie danych do serwera...");
+        try {
+            const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dane)
+            });
+            const wynik = await res.json();
+            wpiszDoKonsoli(wynik);
+            if (res.ok && wynik.status === "ok") {
+                wyswietlAlert(idAlertu);
+            }
+        } catch (err) {
+            wpiszDoKonsoli("❌ Błąd podczas wysyłania zapytania:\n" + err);
+        }
+    }
+
+    function obsluzDodawanieMinistranta() {
+        const nick = document.getElementById('minNick').value.trim();
+        const ranga = document.getElementById('minRanga').value;
+
+        if (!nick) {
+            alert("Proszę podać nick lub imię i nazwisko!");
+            return;
         }
 
-        function logout() {
-            document.getElementById('main-panel').style.display = 'none';
-            document.getElementById('login-screen').style.display = 'flex';
-            document.getElementById('admin-password').value = '';
-            document.getElementById('error-msg').style.display = 'none';
+        wyślijZapytaniePOST('/api/add_ministrant', { nick: nick, ranga: ranga }, 'msgAddMin');
+        document.getElementById('minNick').value = "";
+    }
+
+    function obsluzOpublikowanieGrafiku() {
+        const tytul = document.getElementById('grafikTytul').value.trim();
+        const tresc = document.getElementById('grafikTresc').value.trim();
+
+        if (!tytul || !tresc) {
+            alert("Uzupełnij tytuł i treść grafiku!");
+            return;
         }
 
-        function switchTab(tabId, element) {
-            const tabs = document.querySelectorAll('.tab-content');
-            tabs.forEach(tab => tab.classList.remove('active'));
+        wyślijZapytaniePOST('/api/post_grafik', { tytul: tytul, tresc: tresc }, 'msgGrafik');
+        document.getElementById('grafikTytul').value = "";
+        document.getElementById('grafikTresc').value = "";
+    }
 
-            const links = document.querySelectorAll('.nav-link');
-            links.forEach(link => link.classList.remove('active'));
+    function obsluzWysylanieMszy() {
+        const tresc = document.getElementById('mszaTresc').value.trim();
 
-            document.getElementById('tab-' + tabId).classList.add('active');
-            element.classList.add('active');
+        if (!tresc) {
+            alert("Wpisz treść ogłoszenia!");
+            return;
         }
-    </script>
+
+        wyślijZapytaniePOST('/api/post_msza', { tresc: tresc }, 'msgMsza');
+        document.getElementById('mszaTresc').value = "";
+    }
+
+    function obsluzZbiorke() {
+        const data = document.getElementById('zbiorkaData').value.trim();
+
+        if (!data) {
+            alert("Podaj termin zbiórki!");
+            return;
+        }
+
+        wyślijZapytaniePOST('/api/post_zbiorka', { data: data }, 'msgZbiorka');
+        document.getElementById('zbiorkaData').value = "";
+    }
+
+    function obsluzAnkiete() {
+        const pytanie = document.getElementById('ankietaPytanie').value.trim();
+        const opcjeSurowe = document.getElementById('ankietaOpcje').value.trim();
+
+        if (!pytanie || !opcjeSurowe) {
+            alert("Podaj pytanie oraz opcje odpowiedzi!");
+            return;
+        }
+
+        const opcjeArray = opcjeSurowe.split(',').map(opc => opc.trim()).filter(opc => opc.length > 0);
+
+        if (opcjeArray.length === 0) {
+            alert("Wprowadź przynajmniej jedną poprawną opcję!");
+            return;
+        }
+
+        wyślijZapytaniePOST('/api/post_ankieta', { pytanie: pytanie, opcje: opcjeArray }, 'msgAnkieta');
+        document.getElementById('ankietaPytanie').value = "";
+        document.getElementById('ankietaOpcje').value = "";
+    }
+
+    function obsluzTicket() {
+        const tytul = document.getElementById('ticketTytul').value.trim();
+        const opis = document.getElementById('ticketOpis').value.trim();
+
+        if (!tytul || !opis) {
+            alert("Uzupełnij tytuł oraz opis zgłoszenia!");
+            return;
+        }
+
+        wyślijZapytaniePOST('/api/post_ticket', { tytul: tytul, opis: opis }, 'msgTicket');
+        document.getElementById('ticketTytul').value = "";
+        document.getElementById('ticketOpis').value = "";
+    }
+
+    // Automatyczne sprawdzanie stanu połączenia przy załadowaniu strony
+    weryfikujPolaczenie();
+</script>
+
 </body>
 </html>
