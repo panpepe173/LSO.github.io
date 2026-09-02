@@ -26,6 +26,7 @@
       display: flex;
       flex-direction: column;
       gap: 20px;
+      position: relative;
     }
     .sidebar h2 {
       color: #d4af37;
@@ -49,6 +50,36 @@
       color: #121212;
       border-color: #d4af37;
     }
+    
+    /* Wskaźnik połączenia z botem na dole bocznego menu */
+    .bot-status-container {
+      margin-top: auto;
+      background: #151515;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #2d2d2d;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+    }
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: #777;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .status-dot.online {
+      background-color: #4caf50;
+      box-shadow: 0 0 8px #4caf50;
+    }
+    .status-dot.offline {
+      background-color: #f44336;
+      box-shadow: 0 0 8px #f44336;
+    }
+
     /* Obszar Główny */
     .content {
       flex: 1;
@@ -169,11 +200,20 @@
     <button class="nav-btn active" onclick="switchTab('dashboard')">📊 Dashboard & Statystyki</button>
     <button class="nav-btn" onclick="switchTab('umowy')">📜 Wystaw Umowę</button>
     <button class="nav-btn" onclick="switchTab('pracownicy')">👥 Lista Pracowników</button>
+
+    <!-- Wskaźnik statusu bota na dole menu -->
+    <div class="bot-status-container">
+      <span id="bot-dot" class="status-dot offline"></span>
+      <div>
+        <div style="font-weight: bold; color: #fff;">Status Bota</div>
+        <div id="bot-status-text" style="color: #888; font-size: 11px;">Łączenie...</div>
+      </div>
+    </div>
   </div>
 
   <div class="content">
     
-    <!-- DOKUMENTACJA / DASHBOARD -->
+    <!-- DASHBOARD -->
     <div id="dashboard" class="tab-content active">
       <div class="header">
         <h1>Dashboard Menedżera</h1>
@@ -277,8 +317,8 @@
   </div>
 
   <script>
-    // ADRES URL HOSTINGU BOTA (Np. na Render/Railway)
-    const BOT_API_URL = "http://localhost:8080"; 
+    // ⚠️ TUTAJ WKLEJ SWÓJ DOKŁADNY ADRES URL Z RENDER.COM (bez ukośnika na końcu)
+    const BOT_API_URL = "https://twoja-nazwa-bota.onrender.com"; 
 
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -291,11 +331,19 @@
     }
 
     async function pobierzDane() {
+      const dot = document.getElementById('bot-dot');
+      const statusText = document.getElementById('bot-status-text');
+
       try {
         const res = await fetch(`${BOT_API_URL}/api/stats`);
+        if (!res.ok) throw new Error("Błąd serwera");
         const data = await res.json();
         
-        // Aktualizacja Dashboardu
+        // Jeśli udało się pobrać dane -> Bot jest Online 🟢
+        dot.className = "status-dot online";
+        statusText.innerText = "Połączono (Online)";
+
+        // Aktualizacja Dashboardu i statystyk
         let aktywni = 0;
         let htmlPracownicy = "";
         
@@ -314,7 +362,6 @@
         document.getElementById('stat-aktywni').innerText = aktywni;
         document.getElementById('pracownicy-table-body').innerHTML = htmlPracownicy;
 
-        // Aktualizacja Umów
         let aktywneUmowy = 0;
         let htmlUmowy = "";
         data.umowy.forEach(u => {
@@ -335,6 +382,9 @@
         document.getElementById('umowy-table-body').innerHTML = htmlUmowy;
 
       } catch (err) {
+        // Jeśli wystąpił błąd -> Bot jest Offline 🔴
+        dot.className = "status-dot offline";
+        statusText.innerText = "Brak połączenia";
         console.error("Błąd połączenia z API Bota:", err);
       }
     }
@@ -373,8 +423,10 @@
       }
     }
 
-    // Pierwsze pobranie danych po załadowaniu
+    // Sprawdzaj status i pobieraj dane automatycznie przy wejściu na stronę
     pobierzDane();
+    // Odświeżaj status co 10 sekund
+    setInterval(pobierzDane, 10000);
   </script>
 </body>
 </html>
