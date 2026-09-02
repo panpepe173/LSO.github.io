@@ -1,5 +1,5 @@
 // TUTAJ WKLEJ LINK ZE STRONY RENDER.COM (zamiast mojego przykładowego poniżej):
-const API_URL = "https://bot-lso.onrender.com";
+const API_URL = "https://bot-lso-1.onrender.com";
 
 // 1. Funkcja do pobierania danych z bota (ministranci, zbiórki itp.)
 async function pobierzDane() {
