@@ -25,14 +25,14 @@
       padding: 20px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 15px;
       position: relative;
     }
     .sidebar h2 {
       color: #d4af37;
       font-size: 20px;
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
     .nav-btn {
       background: transparent;
@@ -101,6 +101,7 @@
     .tab-content.active {
       display: block;
     }
+    
     /* Kafelki Statystyk */
     .stats-grid {
       display: grid;
@@ -124,8 +125,9 @@
       font-weight: bold;
       color: #d4af37;
     }
-    /* Formularz Umowy */
-    .form-container {
+    
+    /* Formularze i Karty */
+    .form-container, .card-box {
       background: #1e1e1e;
       border: 1px solid #2d2d2d;
       border-radius: 10px;
@@ -151,7 +153,7 @@
       color: #fff;
       outline: none;
     }
-    .submit-btn {
+    .submit-btn, .action-btn {
       background: #d4af37;
       color: #121212;
       border: none;
@@ -162,9 +164,29 @@
       width: 100%;
       transition: 0.2s;
     }
-    .submit-btn:hover {
+    .submit-btn:hover, .action-btn:hover {
       background: #c29d2b;
     }
+
+    /* Styl dla generowania kodu */
+    .kod-box {
+      display: inline-block;
+      color: #d4af37;
+      background: #2a2a2a;
+      padding: 8px 15px;
+      border-radius: 5px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin: 10px 0;
+      border: 1px dashed #d4af37;
+    }
+    code {
+      background: #2a2a2a;
+      color: #fff;
+      padding: 3px 6px;
+      border-radius: 4px;
+    }
+
     /* Tabela */
     table {
       width: 100%;
@@ -197,9 +219,10 @@
 
   <div class="sidebar">
     <h2>Zantrell Café</h2>
-    <button class="nav-btn active" onclick="switchTab('dashboard')">📊 Dashboard & Statystyki</button>
-    <button class="nav-btn" onclick="switchTab('umowy')">📜 Wystaw Umowę</button>
-    <button class="nav-btn" onclick="switchTab('pracownicy')">👥 Lista Pracowników</button>
+    <button class="nav-btn active" onclick="switchTab('dashboard', event)">📊 Dashboard</button>
+    <button class="nav-btn" onclick="switchTab('umowy', event)">📜 Wystaw Umowę</button>
+    <button class="nav-btn" onclick="switchTab('pracownicy', event)">👥 Pracownicy</button>
+    <button class="nav-btn" onclick="switchTab('discord', event)">🔗 Połącz Discord</button>
 
     <!-- Wskaźnik statusu bota na dole menu -->
     <div class="bot-status-container">
@@ -314,20 +337,40 @@
       </table>
     </div>
 
+    <!-- ZAKŁADKA POŁĄCZENIE Z DISCORDEM (GENEROWANIE KODU) -->
+    <div id="discord" class="tab-content">
+      <div class="header">
+        <h1>Połączenie Konta z Discordem</h1>
+      </div>
+
+      <div class="card-box">
+        <h3 style="color: #d4af37; margin-bottom: 10px;">Wygeneruj kod weryfikacyjny</h3>
+        <p style="color: #b0b0b0; font-size: 0.95em; margin-bottom: 20px;">Kliknij przycisk poniżej, aby wygenerować jednorazowy kod, którym połączysz swoją stronę z kontem Discord.</p>
+        
+        <button class="action-btn" onclick="generujKodDiscord()">Wygeneruj kod</button>
+        
+        <div id="wynik-kod" style="margin-top: 20px;"></div>
+      </div>
+    </div>
+
   </div>
 
   <script>
-    // ⚠️ TUTAJ WKLEJ SWÓJ DOKŁADNY ADRES URL Z RENDER.COM (bez ukośnika na końcu)
-    const BOT_API_URL = "https://twoja-nazwa-bota.onrender.com"; 
+    // ⚠️ TWÓJ ADRES URL Z RENDER.COM
+    const BOT_API_URL = "https://bot-lso-1.onrender.com"; 
 
-    function switchTab(tabId) {
+    function switchTab(tabId, event) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
       
       document.getElementById(tabId).classList.add('active');
-      event.target.classList.add('active');
+      if(event && event.target) {
+        event.target.classList.add('active');
+      }
       
-      pobierzDane();
+      if(tabId !== 'discord') {
+        pobierzDane();
+      }
     }
 
     async function pobierzDane() {
@@ -339,15 +382,13 @@
         if (!res.ok) throw new Error("Błąd serwera");
         const data = await res.json();
         
-        // Jeśli udało się pobrać dane -> Bot jest Online 🟢
         dot.className = "status-dot online";
         statusText.innerText = "Połączono (Online)";
 
-        // Aktualizacja Dashboardu i statystyk
         let aktywni = 0;
         let htmlPracownicy = "";
         
-        for (const [id, p] of Object.entries(data.pracownicy)) {
+        for (const [id, p] of Object.entries(data.pracownicy || {})) {
           if (p.aktywny) aktywni++;
           const godz = (p.total_seconds / 3600).toFixed(1);
           htmlPracownicy += `
@@ -364,7 +405,7 @@
 
         let aktywneUmowy = 0;
         let htmlUmowy = "";
-        data.umowy.forEach(u => {
+        (data.umowy || []).forEach(u => {
           if (u.status === "Podpisana") aktywneUmowy++;
           htmlUmowy += `
             <tr>
@@ -377,12 +418,11 @@
             </tr>
           `;
         });
-        document.getElementById('stat-umowy-count').innerText = data.umowy.length;
+        document.getElementById('stat-umowy-count').innerText = (data.umowy || []).length;
         document.getElementById('stat-umowy-aktywne').innerText = aktywneUmowy;
         document.getElementById('umowy-table-body').innerHTML = htmlUmowy;
 
       } catch (err) {
-        // Jeśli wystąpił błąd -> Bot jest Offline 🔴
         dot.className = "status-dot offline";
         statusText.innerText = "Brak połączenia";
         console.error("Błąd połączenia z API Bota:", err);
@@ -423,9 +463,41 @@
       }
     }
 
-    // Sprawdzaj status i pobieraj dane automatycznie przy wejściu na stronę
+    // Funkcja generująca kod do bota Discord
+    async function generujKodDiscord() {
+      const wynikDiv = document.getElementById('wynik-kod');
+      wynikDiv.innerHTML = "<p style='color: #888;'>Generowanie kodu...</p>";
+
+      try {
+        const response = await fetch(`${BOT_API_URL}/api/generuj-kod`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            user_id_strona: "gracz_www" 
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.status === "success") {
+          wynikDiv.innerHTML = `
+            <p>Twój jednorazowy kod:</p>
+            <div class="kod-box">${data.kod}</div>
+            <p style="font-size: 0.85em; color: #b0b0b0;">Wpisz na Discordzie komendę:<br><br><code>/podlacz kod:${data.kod}</code></p>
+          `;
+        } else {
+          wynikDiv.innerHTML = "<p style='color: #ff5555;'>❌ Błąd podczas generowania kodu. Spróbuj ponownie.</p>";
+        }
+      } catch (error) {
+        console.error("Błąd połączenia:", error);
+        wynikDiv.innerHTML = "<p style='color: #ff5555;'>❌ Nie udało się połączyć z botem. Serwer może się uruchamiać.</p>";
+      }
+    }
+
+    // Start automatycznego pobierania danych
     pobierzDane();
-    // Odświeżaj status co 10 sekund
     setInterval(pobierzDane, 10000);
   </script>
 </body>
